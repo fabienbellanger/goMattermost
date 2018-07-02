@@ -13,7 +13,7 @@ all: test build
 install:
 	$(GOINSTALL) ./...
 runMattermost:
-	$(GORUN) server.go mattermost -r pos -p .
+	$(GORUN) main.go mattermost -r pos -p .
 mattermost: install runMattermost
 build: 
 	$(GOBUILD) -o $(BINARY_NAME) -v

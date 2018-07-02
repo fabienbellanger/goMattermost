@@ -1,0 +1,13 @@
+{
+    "version": "0.0.1",
+    "database": {
+        "driver": "",
+        "name": "",
+        "user": "",
+        "password": ""
+    },
+    "mattermost": {
+        "hookUrl": "",
+        "hookPayload": ""
+    }
+}
