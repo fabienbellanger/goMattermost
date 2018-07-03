@@ -3,7 +3,6 @@ package mattermost
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"os/exec"
 	"regexp"
 
@@ -32,16 +31,15 @@ func Launch(path, repository string) {
 
 	// Formattage du payload
 	// ---------------------
-	// payloadJSONEncoded := formatPayload(repository, commit)
+	payloadJSONEncoded := formatPayload(repository, commit)
 
 	// Envoi à Mattermost
 	// ------------------
-	// sendToMattermost(payloadJSONEncoded)
+	sendToMattermost(payloadJSONEncoded)
 
 	// Enregistrement du commit en base de données
 	// -------------------------------------------
-	fmt.Println(commit)
-	models.AddCommit(commit)
+	models.AddCommit(repository, commit)
 }
 
 // retrieveCommit : Récupération du dernier commit Git de master
