@@ -1,7 +1,7 @@
 package command
 
 import (
-	"github.com/fabienbellanger/goMattermost/lib/mattermost"
+	"github.com/fabienbellanger/goMattermost/lib"
 	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 )

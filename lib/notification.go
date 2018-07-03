@@ -4,16 +4,12 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"net/http"
-	"net/url"
 	"os/exec"
 	"regexp"
-	"strconv"
-	"strings"
 
 	"github.com/fabienbellanger/goMattermost/config"
+	"github.com/fabienbellanger/goMattermost/models"
 	"github.com/fabienbellanger/goMattermost/toolbox"
-	"github.com/fatih/color"
 )
 
 var hookURL, hookPayload string
@@ -21,17 +17,6 @@ var hookURL, hookPayload string
 // payload structure
 type payload struct {
 	Text string `json:"text"`
-}
-
-// commitInformation structure
-type commitInformation struct {
-	author      string
-	subject     string
-	version     string
-	developers  string
-	testers     string
-	tickets     string
-	description string
 }
 
 // Launch : Lancement du traitement
@@ -42,12 +27,21 @@ func Launch(path, repository string) {
 
 	// Formattage du commit
 	// --------------------
-	commit := commitInformation{}
+	commit := models.CommitInformation{}
 	formatGitCommit(gitLogOutput, &commit)
+
+	// Formattage du payload
+	// ---------------------
+	// payloadJSONEncoded := formatPayload(repository, commit)
 
 	// Envoi à Mattermost
 	// ------------------
-	sendToMattermost(repository, commit)
+	// sendToMattermost(payloadJSONEncoded)
+
+	// Enregistrement du commit en base de données
+	// -------------------------------------------
+	fmt.Println(commit)
+	models.AddCommit(commit)
 }
 
 // retrieveCommit : Récupération du dernier commit Git de master
@@ -66,14 +60,14 @@ func retrieveCommit(path string) []byte {
 }
 
 // formatGitCommit : Formattage du commit
-func formatGitCommit(gitLogOutput []byte, commit *commitInformation) {
+func formatGitCommit(gitLogOutput []byte, commit *models.CommitInformation) {
 	message := ""
 	regex := regexp.MustCompile("(?m)(?s)<(.*)>\n<(.*)>\n<(.*)>")
 
 	for _, match := range regex.FindAllSubmatch(gitLogOutput, -1) {
 		if len(match) == 4 {
-			commit.author = string(match[1])
-			commit.subject = string(match[2])
+			commit.Author = string(match[1])
+			commit.Subject = string(match[2])
 			message = string(match[3])
 		}
 	}
@@ -85,27 +79,27 @@ func formatGitCommit(gitLogOutput []byte, commit *commitInformation) {
 
 		for _, matchMessage := range regexMessage.FindAllSubmatch([]byte(message), -1) {
 			if len(matchMessage) == 5 {
-				commit.version = string(matchMessage[1])
-				commit.developers = string(matchMessage[2])
-				commit.testers = string(matchMessage[3])
-				commit.description = string(matchMessage[4])
+				commit.Version = string(matchMessage[1])
+				commit.Developers = string(matchMessage[2])
+				commit.Testers = string(matchMessage[3])
+				commit.Description = string(matchMessage[4])
 			}
 		}
 	}
 }
 
 // isCommitValid : Les informations du commit sont-elles valides ?
-func isCommitValid(commit commitInformation) bool {
-	return (commit.author != "" ||
-		commit.subject != "" ||
-		commit.version != "" ||
-		commit.developers != "" ||
-		commit.testers != "" ||
-		commit.description != "")
+func isCommitValid(commit models.CommitInformation) bool {
+	return (commit.Author != "" ||
+		commit.Subject != "" ||
+		commit.Version != "" ||
+		commit.Developers != "" ||
+		commit.Testers != "" ||
+		commit.Description != "")
 }
 
-// sendToMattermost : Envoi sur le Webhook de Mattermost
-func sendToMattermost(repository string, commit commitInformation) {
+// formatPayload : Mise en forme du payload
+func formatPayload(repository string, commit models.CommitInformation) []byte {
 	if !isCommitValid(commit) {
 		err := errors.New("No Git repository found")
 		toolbox.CheckError(err, 2)
@@ -124,55 +118,35 @@ func sendToMattermost(repository string, commit commitInformation) {
 	payload.Text = "### Mise en production\n"
 	payload.Text += "#### " + toolbox.Ucfirst(repository)
 
-	if commit.version != "" {
-		payload.Text += " - v" + commit.version
+	if commit.Version != "" {
+		payload.Text += " - v" + commit.Version
 	}
 	payload.Text += "\n"
 
-	if commit.subject != "" {
-		payload.Text += "| Sujet |" + toolbox.Ucfirst(commit.subject) + "|\n"
+	if commit.Subject != "" {
+		payload.Text += "| Sujet |" + toolbox.Ucfirst(commit.Subject) + "|\n"
 	}
 
 	payload.Text += "|:---|:---|\n"
 
-	if commit.author != "" {
-		payload.Text += "| Auteur |" + toolbox.Ucfirst(commit.author) + "|\n"
+	if commit.Author != "" {
+		payload.Text += "| Auteur |" + toolbox.Ucfirst(commit.Author) + "|\n"
 	}
 
-	if commit.developers != "" {
-		payload.Text += "| Développeur(s) |" + commit.developers + "|\n"
+	if commit.Developers != "" {
+		payload.Text += "| Développeur(s) |" + commit.Developers + "|\n"
 	}
 
-	if commit.testers != "" {
-		payload.Text += "| Testeur(s) |" + commit.testers + "|\n"
+	if commit.Testers != "" {
+		payload.Text += "| Testeur(s) |" + commit.Testers + "|\n"
 	}
 
-	if commit.description != "" {
-		payload.Text += "#### Description :\n" + commit.description + "\n"
+	if commit.Description != "" {
+		payload.Text += "#### Description :\n" + commit.Description + "\n"
 	}
 
 	payloadJSONEncoded, err := json.Marshal(payload)
 	toolbox.CheckError(err, 3)
 
-	// Construction de la requête
-	// --------------------------
-	data := url.Values{}
-	data.Set("payload", string(payloadJSONEncoded))
-
-	u, err := url.ParseRequestURI(hookURL + hookPayload)
-	toolbox.CheckError(err, 4)
-	urlStr := u.String()
-
-	client := &http.Client{}
-	r, _ := http.NewRequest("POST", urlStr, strings.NewReader(data.Encode()))
-	r.Header.Add("Content-Type", "application/x-www-form-urlencoded")
-	r.Header.Add("Content-Length", strconv.Itoa(len(data.Encode())))
-
-	// Envoi de la requête
-	// -------------------
-	response, err := client.Do(r)
-	toolbox.CheckError(err, 5)
-
-	fmt.Print("Mattermost response: ")
-	color.Green(response.Status + "\n\n")
+	return payloadJSONEncoded
 }
