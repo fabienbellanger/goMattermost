@@ -7,7 +7,7 @@
 #
 # Hôte: 127.0.0.1 (MySQL 5.5.5-10.3.7-MariaDB)
 # Base de données: goRestApi
-# Temps de génération: 2018-07-03 20:32:03 +0000
+# Temps de génération: 2018-07-03 21:40:25 +0000
 # ************************************************************
 
 
@@ -27,12 +27,13 @@ DROP TABLE IF EXISTS `commit`;
 
 CREATE TABLE `commit` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `version` varchar(11) NOT NULL DEFAULT '',
-  `author` varchar(100) NOT NULL,
-  `subject` varchar(200) DEFAULT NULL,
-  `description` text NOT NULL,
-  `developers` varchar(200) NOT NULL DEFAULT '',
-  `testers` varchar(200) NOT NULL DEFAULT '',
+  `project` varchar(50) NOT NULL,
+  `version` varchar(11) DEFAULT '',
+  `author` varchar(100) DEFAULT '',
+  `subject` varchar(200) NOT NULL DEFAULT '',
+  `description` text DEFAULT NULL,
+  `developers` varchar(200) DEFAULT '',
+  `testers` varchar(200) DEFAULT '',
   `created_at` datetime NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
