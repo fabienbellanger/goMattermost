@@ -3,13 +3,16 @@ package mattermost
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"os/exec"
 	"regexp"
+	"strconv"
 	"strings"
 
 	"github.com/fabienbellanger/goMattermost/config"
 	"github.com/fabienbellanger/goMattermost/models"
 	"github.com/fabienbellanger/goMattermost/toolbox"
+	"github.com/fatih/color"
 )
 
 var hookURL, hookPayload string
@@ -20,7 +23,7 @@ type payload struct {
 }
 
 // Launch : Lancement du traitement
-func Launch(path, repository string, noDatabase bool) {
+func Launch(path, repository string, noDatabase, sendToMattermost, sendToSlack bool) {
 	// Récupération du dernier commit Git de master
 	// --------------------------------------------
 	gitLogOutput := retrieveCommit(path)
@@ -33,16 +36,27 @@ func Launch(path, repository string, noDatabase bool) {
 
 	// Formattage du payload
 	// ---------------------
-	// payloadJSONEncoded := formatPayload(repository, commit)
+	payloadJSONEncoded := formatPayload(repository, commit)
 
 	// Envoi à Mattermost
 	// ------------------
-	// sendToMattermost(payloadJSONEncoded)
+	if sendToMattermost {
+		sendNotificationToMattermost(payloadJSONEncoded)
+	}
 
 	// Enregistrement du commit en base de données
 	// -------------------------------------------
 	if !noDatabase {
-		models.AddCommit(repository, commit)
+		fmt.Println("Inserting commit into database...")
+
+		commitDB, err := models.AddCommit(repository, commit)
+
+		if err != nil {
+			color.Red(" -> Error during inserting commit in database\n\n")
+		} else {
+			fmt.Print(" -> Commit inserted with ID: ")
+			color.Green(strconv.FormatInt(int64(commitDB.ID), 10) + "\n\n")
+		}
 	}
 }
 

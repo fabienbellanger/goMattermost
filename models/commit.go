@@ -3,12 +3,9 @@ package models
 import (
 	"database/sql"
 	"errors"
-	"fmt"
-	"strconv"
 
 	"github.com/fabienbellanger/goMattermost/database"
 	"github.com/fabienbellanger/goMattermost/toolbox"
-	"github.com/fatih/color"
 )
 
 // CommitDB type
@@ -81,7 +78,7 @@ func newCommitDBFromCommitInformation(repository string, commit CommitInformatio
 }
 
 // AddCommit : Ajout d'un commit en base de données
-func AddCommit(repository string, commit CommitInformation) {
+func AddCommit(repository string, commit CommitInformation) (commitDB CommitDB, errInsert error) {
 	// Tests des données
 	// -----------------
 	if len(repository) == 0 || len(commit.Subject) == 0 {
@@ -89,7 +86,7 @@ func AddCommit(repository string, commit CommitInformation) {
 		toolbox.CheckError(err, 1)
 	}
 
-	commitDB := newCommitDBFromCommitInformation(repository, commit)
+	commitDB = newCommitDBFromCommitInformation(repository, commit)
 
 	query := `
 		INSERT INTO commit(project, version, author, subject, description, developers, testers, created_at)
@@ -104,10 +101,11 @@ func AddCommit(repository string, commit CommitInformation) {
 		commitDB.Developers,
 		commitDB.Testers)
 
+	errInsert = err
+
 	if err == nil {
 		commitDB.ID = uint64(id)
-
-		fmt.Print("Insertion dans la table commit avec l'ID : ")
-		color.Green(strconv.FormatInt(id, 10) + "\n\n")
 	}
+
+	return
 }

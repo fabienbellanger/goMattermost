@@ -11,8 +11,10 @@ import (
 	"github.com/fatih/color"
 )
 
-// sendToMattermost : Envoi sur le Webhook de Mattermost
-func sendToMattermost(payloadJSONEncoded []byte) {
+// sendNotificationToMattermost : Envoi sur le Webhook de Mattermost
+func sendNotificationToMattermost(payloadJSONEncoded []byte) {
+	fmt.Println("Sending notification to Mattermost...")
+
 	// Construction de la requête
 	// --------------------------
 	data := url.Values{}
@@ -32,6 +34,6 @@ func sendToMattermost(payloadJSONEncoded []byte) {
 	response, err := client.Do(r)
 	toolbox.CheckError(err, 5)
 
-	fmt.Print("Mattermost response: ")
+	fmt.Print(" -> Mattermost response: ")
 	color.Green(response.Status + "\n\n")
 }

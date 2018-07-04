@@ -2,7 +2,6 @@ package command
 
 import (
 	"errors"
-	"fmt"
 	"strings"
 
 	"github.com/fabienbellanger/goMattermost/config"
@@ -15,6 +14,13 @@ import (
 
 // NoDatabase : Aucune opération ne sera faite en base de données
 var NoDatabase bool
+
+// SendToMattermost : Envoi à Mattermost ?
+var SendToMattermost bool
+
+// SendToSlack : Envoi à Slack ?
+var SendToSlack bool
+
 var path, repository, applications string
 
 func init() {
@@ -39,11 +45,11 @@ var NotificationCommand = &cobra.Command{
 
 	Run: func(cmd *cobra.Command, args []string) {
 		color.Yellow(`
-|------------------------------------------------------------------------------|
-|                                                                              |
-| Envoi des données du dernier commit fait sur master à Mattermost et/ou Slack |
-|                                                                              |
-|------------------------------------------------------------------------------|
+|-------------------------------------------------------------------------------|
+|                                                                               |
+| Send data of the last commit done on master branch to Mattermost and/or Slack |
+|                                                                               |
+|-------------------------------------------------------------------------------|
 
 		`)
 
@@ -61,19 +67,17 @@ var NotificationCommand = &cobra.Command{
 
 		// Liste des applications à notifier
 		// ---------------------------------
-		fmt.Println(applications)
 		applicationsArray := strings.Split(applications, ",")
-		fmt.Println(applicationsArray)
-		fmt.Println(toolbox.InArray("Mattermost", applicationsArray))
-		fmt.Println(toolbox.InArray("Slack", applicationsArray))
+		SendToMattermost, _ = toolbox.InArray("mattermost", applicationsArray)
+		SendToSlack, _ = toolbox.InArray("slack", applicationsArray)
 
 		// Envoi à Mattermost
 		// ------------------
-		if !config.IsMattermostConfigCorrect() {
+		if SendToMattermost && !config.IsMattermostConfigCorrect() {
 			err := errors.New("No or missing Mattermost information in settings file")
 			toolbox.CheckError(err, 1)
 		}
 
-		notification.Launch(path, repository, NoDatabase)
+		notification.Launch(path, repository, NoDatabase, SendToMattermost, SendToSlack)
 	},
 }
