@@ -83,3 +83,13 @@ func Init() {
 	MattermostHookURL = configuration.Mattermost.HookURL
 	MattermostHookPayload = configuration.Mattermost.HookPayload
 }
+
+// IsMattermostConfigCorrect : La configuration de Mattermost est-elle correcte ?
+func IsMattermostConfigCorrect() bool {
+	return MattermostHookURL != "" && MattermostHookPayload != ""
+}
+
+// IsDatabaseConfigCorrect : La configuration de la base de données est-elle correcte ?
+func IsDatabaseConfigCorrect() bool {
+	return (DatabaseDriver != "" && DatabaseName != "" && DatabaseUser != "")
+}

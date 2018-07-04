@@ -1,7 +1,12 @@
 package command
 
 import (
+	"errors"
+
+	"github.com/fabienbellanger/goMattermost/config"
+	"github.com/fabienbellanger/goMattermost/database"
 	"github.com/fabienbellanger/goMattermost/lib"
+	"github.com/fabienbellanger/goMattermost/toolbox"
 	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 )
@@ -24,7 +29,7 @@ func init() {
 	rootCommand.AddCommand(MattermostCommand)
 }
 
-// MattermostCommand : Web command
+// MattermostCommand : Mattermost command
 var MattermostCommand = &cobra.Command{
 	Use:   "mattermost",
 	Short: "Send message to Mattermost",
@@ -39,8 +44,24 @@ var MattermostCommand = &cobra.Command{
 
 		`)
 
+		// Connexion à MySQL
+		// -----------------
+		if !NoDatabase {
+			if !config.IsDatabaseConfigCorrect() {
+				err := errors.New("No or missing database information in settings file")
+				toolbox.CheckError(err, 1)
+			}
+
+			database.Open()
+			defer database.DB.Close()
+		}
+
 		// Envoi à Mattermost
 		// ------------------
+		if !config.IsMattermostConfigCorrect() {
+			err := errors.New("No or missing Mattermost information in settings file")
+			toolbox.CheckError(err, 1)
+		}
 		mattermost.Launch(path, repository, NoDatabase)
 	},
 }
