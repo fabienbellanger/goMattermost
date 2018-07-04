@@ -19,7 +19,7 @@ type payload struct {
 }
 
 // Launch : Lancement du traitement
-func Launch(path, repository string) {
+func Launch(path, repository string, noDatabase bool) {
 	// Récupération du dernier commit Git de master
 	// --------------------------------------------
 	gitLogOutput := retrieveCommit(path)
@@ -31,15 +31,17 @@ func Launch(path, repository string) {
 
 	// Formattage du payload
 	// ---------------------
-	payloadJSONEncoded := formatPayload(repository, commit)
+	// payloadJSONEncoded := formatPayload(repository, commit)
 
 	// Envoi à Mattermost
 	// ------------------
-	sendToMattermost(payloadJSONEncoded)
+	// sendToMattermost(payloadJSONEncoded)
 
 	// Enregistrement du commit en base de données
 	// -------------------------------------------
-	models.AddCommit(repository, commit)
+	if !noDatabase {
+		models.AddCommit(repository, commit)
+	}
 }
 
 // retrieveCommit : Récupération du dernier commit Git de master

@@ -6,6 +6,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// NoDatabase : Aucune opération ne sera faite en base de données
+var NoDatabase bool
 var path, repository string
 
 func init() {
@@ -15,6 +17,8 @@ func init() {
 	MattermostCommand.Flags().StringVarP(&repository, "repository", "r", "", "Repository")
 	MattermostCommand.MarkFlagRequired("path")
 	MattermostCommand.MarkFlagRequired("repository")
+
+	rootCommand.PersistentFlags().BoolVarP(&NoDatabase, "no-database", "d", false, "Save data to database")
 
 	// Ajout de la commande à la commande racine
 	rootCommand.AddCommand(MattermostCommand)
@@ -37,6 +41,6 @@ var MattermostCommand = &cobra.Command{
 
 		// Envoi à Mattermost
 		// ------------------
-		mattermost.Launch(path, repository)
+		mattermost.Launch(path, repository, NoDatabase)
 	},
 }

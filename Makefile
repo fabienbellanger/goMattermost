@@ -13,7 +13,9 @@ all: test build
 install:
 	$(GOINSTALL) ./...
 runMattermost:
-	$(GORUN) main.go mattermost -r pos -p .
+	$(GORUN) main.go mattermost -r pos -p . --with-database
+runMattermostNoDB:
+	$(GORUN) main.go mattermost -r pos -p . --with-database
 mattermost: install runMattermost
 build: 
 	$(GOBUILD) -o $(BINARY_NAME) -v
