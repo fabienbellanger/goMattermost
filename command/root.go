@@ -2,7 +2,6 @@ package command
 
 import (
 	"errors"
-	"fmt"
 	"os"
 
 	"github.com/fabienbellanger/goMattermost/config"
@@ -26,14 +25,12 @@ func Execute() {
 
 	// Connexion à MySQL
 	// -----------------
-	fmt.Println(NoDatabase)
-
-	if !NoDatabase && (len(config.DatabaseDriver) == 0 || len(config.DatabaseName) == 0 || len(config.DatabaseUser) == 0) {
-		err := errors.New("No or missing database information in settings file")
-		toolbox.CheckError(err, 1)
-	}
-
 	if !NoDatabase {
+		if len(config.DatabaseDriver) == 0 || len(config.DatabaseName) == 0 || len(config.DatabaseUser) == 0 {
+			err := errors.New("No or missing database information in settings file")
+			toolbox.CheckError(err, 1)
+		}
+
 		database.Open()
 		defer database.DB.Close()
 	}
