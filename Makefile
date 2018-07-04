@@ -19,7 +19,7 @@ runMattermost:
 mattermost: install runMattermost
 
 runMattermostNoDB:
-	$(GORUN) main.go mattermost -r project/ -p . --no-database
+	$(GORUN) main.go mattermost -r project/ -p . --no-database -a slack,mattermost
 mattermostNoDB: install runMattermostNoDB
 
 build: 
