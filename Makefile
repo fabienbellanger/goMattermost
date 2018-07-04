@@ -15,11 +15,11 @@ install:
 	$(GOINSTALL) ./...
 
 runMattermost:
-	$(GORUN) main.go mattermost -r pos -p .
+	$(GORUN) main.go mattermost -r project/ -p .
 mattermost: install runMattermost
 
 runMattermostNoDB:
-	$(GORUN) main.go mattermost -r pos -p . --no-database
+	$(GORUN) main.go mattermost -r project/ -p . --no-database
 mattermostNoDB: install runMattermostNoDB
 
 build: 

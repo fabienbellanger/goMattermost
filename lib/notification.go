@@ -5,6 +5,7 @@ import (
 	"errors"
 	"os/exec"
 	"regexp"
+	"strings"
 
 	"github.com/fabienbellanger/goMattermost/config"
 	"github.com/fabienbellanger/goMattermost/models"
@@ -24,10 +25,11 @@ func Launch(path, repository string, noDatabase bool) {
 	// --------------------------------------------
 	gitLogOutput := retrieveCommit(path)
 
-	// Formattage du commit
-	// --------------------
+	// Formattage du commit et du repository
+	// -------------------------------------
 	commit := models.CommitInformation{}
 	formatGitCommit(gitLogOutput, &commit)
+	formatRepositoryName(&repository)
 
 	// Formattage du payload
 	// ---------------------
@@ -41,6 +43,17 @@ func Launch(path, repository string, noDatabase bool) {
 	// -------------------------------------------
 	if !noDatabase {
 		models.AddCommit(repository, commit)
+	}
+}
+
+// formatRepositoryName : Formattage du nom du répository
+func formatRepositoryName(repository *string) {
+	s := *repository
+	lastIndex := strings.LastIndex(s, "/")
+
+	repositoryLen := len(s)
+	if lastIndex == repositoryLen-1 {
+		*repository = s[0 : repositoryLen-1]
 	}
 }
 

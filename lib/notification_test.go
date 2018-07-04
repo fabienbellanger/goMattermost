@@ -51,3 +51,33 @@ func TestFormatGitCommit(t *testing.T) {
 		t.Error("formatGitCommit - got: not empty commit, want: empty commit.")
 	}
 }
+
+// TestFormatRepositoryName : Test du formattage du nom du répository
+func TestFormatRepositoryName(t *testing.T) {
+	rRef := "repo/"
+	rGood := "repo"
+	r := rRef
+	formatRepositoryName(&r)
+
+	if r != rGood {
+		t.Errorf("formatRepositoryName - got: %s, want: %s.", r, rGood)
+	}
+
+	rRef = "repo"
+	rGood = "repo"
+	r = rRef
+	formatRepositoryName(&r)
+
+	if r != rGood {
+		t.Errorf("formatRepositoryName - got: %s, want: %s.", r, rGood)
+	}
+
+	rRef = "/repo/sub/"
+	rGood = "/repo/sub"
+	r = rRef
+	formatRepositoryName(&r)
+
+	if r != rGood {
+		t.Errorf("formatRepositoryName - got: %s, want: %s.", r, rGood)
+	}
+}
