@@ -19,6 +19,9 @@ type Configuration struct {
 		HookURL     string
 		HookPayload string
 	}
+	Slack struct {
+		HookURL string
+	}
 }
 
 // Version of current application

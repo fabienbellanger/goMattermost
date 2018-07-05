@@ -10,4 +10,7 @@
         "hookUrl": "",
         "hookPayload": ""
     }
+    "slack": {
+        "hookUrl": "https://hooks.slack.com/services/"
+    }
 }
