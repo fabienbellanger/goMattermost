@@ -41,7 +41,7 @@ func init() {
 // NotificationCommand : Notification command
 var NotificationCommand = &cobra.Command{
 	Use:   "mattermost",
-	Short: "Send message to Mattermost or Slack",
+	Short: "Send message to Mattermost and/or Slack",
 
 	Run: func(cmd *cobra.Command, args []string) {
 		color.Yellow(`
@@ -71,13 +71,15 @@ var NotificationCommand = &cobra.Command{
 		SendToMattermost, _ = toolbox.InArray("mattermost", applicationsArray)
 		SendToSlack, _ = toolbox.InArray("slack", applicationsArray)
 
-		// Envoi à Mattermost
-		// ------------------
+		// Configuration Mattermost OK ?
+		// -----------------------------
 		if SendToMattermost && !config.IsMattermostConfigCorrect() {
 			err := errors.New("No or missing Mattermost information in settings file")
 			toolbox.CheckError(err, 1)
 		}
 
+		// Envoi de la notification
+		// ------------------------
 		notification.Launch(path, repository, NoDatabase, SendToMattermost, SendToSlack)
 	},
 }
