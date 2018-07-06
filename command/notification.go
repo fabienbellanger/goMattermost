@@ -78,6 +78,13 @@ var NotificationCommand = &cobra.Command{
 			toolbox.CheckError(err, 1)
 		}
 
+		// Configuration Slack OK ?
+		// ------------------------
+		if SendToSlack && !config.IsSlackConfigCorrect() {
+			err := errors.New("No or missing Slack information in settings file")
+			toolbox.CheckError(err, 1)
+		}
+
 		// Envoi de la notification
 		// ------------------------
 		notification.Launch(path, repository, NoDatabase, SendToMattermost, SendToSlack)
