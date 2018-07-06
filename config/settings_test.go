@@ -39,6 +39,41 @@ func TestIsMattermostConfigCorrect(t *testing.T) {
 	}
 }
 
+// TestIsSlackConfigCorrect : Test si la configuration de Slack est correcte
+func TestIsSlackConfigCorrect(t *testing.T) {
+	SlackHookURL = ""
+	SlackHookPayload = ""
+	isCorrect := IsSlackConfigCorrect()
+
+	if isCorrect {
+		t.Errorf("IsSlackConfigCorrect - got: %t, want: %t.", isCorrect, false)
+	}
+
+	SlackHookURL = "aaa"
+	SlackHookPayload = ""
+	isCorrect = IsSlackConfigCorrect()
+
+	if isCorrect {
+		t.Errorf("IsSlackConfigCorrect - got: %t, want: %t.", isCorrect, false)
+	}
+
+	SlackHookURL = ""
+	SlackHookPayload = "aaa"
+	isCorrect = IsSlackConfigCorrect()
+
+	if isCorrect {
+		t.Errorf("IsSlackConfigCorrect - got: %t, want: %t.", isCorrect, false)
+	}
+
+	SlackHookURL = "aaa"
+	SlackHookPayload = "aaa"
+	isCorrect = IsSlackConfigCorrect()
+
+	if !isCorrect {
+		t.Errorf("IsSlackConfigCorrect - got: %t, want: %t.", !isCorrect, true)
+	}
+}
+
 // TestIsDatebaseConfigCorrect : Test si la configuration de la base de données est correcte
 func TestIsDatebaseConfigCorrect(t *testing.T) {
 	DatabaseDriver = ""

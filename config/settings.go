@@ -20,7 +20,8 @@ type Configuration struct {
 		HookPayload string
 	}
 	Slack struct {
-		HookURL string
+		HookURL     string
+		HookPayload string
 	}
 }
 
@@ -57,6 +58,18 @@ var MattermostHookURL string
 // MattermostHookPayload : Payload pour l'envoi de message
 var MattermostHookPayload string
 
+// ============================================================================
+//
+// Slack
+//
+// ============================================================================
+
+// SlackHookURL : URL pour l'envoi de message
+var SlackHookURL string
+
+// SlackHookPayload : Payload pour l'envoi de message
+var SlackHookPayload string
+
 // Init : Lecture du fichier de configuration
 func Init() {
 	// Lecture du fichier de configuration
@@ -85,11 +98,19 @@ func Init() {
 
 	MattermostHookURL = configuration.Mattermost.HookURL
 	MattermostHookPayload = configuration.Mattermost.HookPayload
+
+	SlackHookURL = configuration.Slack.HookURL
+	SlackHookPayload = configuration.Slack.HookPayload
 }
 
 // IsMattermostConfigCorrect : La configuration de Mattermost est-elle correcte ?
 func IsMattermostConfigCorrect() bool {
 	return MattermostHookURL != "" && MattermostHookPayload != ""
+}
+
+// IsSlackConfigCorrect : La configuration de Slack est-elle correcte ?
+func IsSlackConfigCorrect() bool {
+	return SlackHookURL != "" && SlackHookPayload != ""
 }
 
 // IsDatabaseConfigCorrect : La configuration de la base de données est-elle correcte ?
