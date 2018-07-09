@@ -3,6 +3,7 @@ package controller
 import (
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/fabienbellanger/goMattermost/models"
 	"github.com/fabienbellanger/goMattermost/toolbox"
@@ -12,6 +13,7 @@ import (
 // GetCommitsHandler : Liste des commits
 func GetCommitsHandler(c echo.Context) error {
 	// Limit du nombre de résultat
+	// ---------------------------
 	const limitMax = 50
 	limit, err := strconv.Atoi(c.QueryParam("limit"))
 	toolbox.CheckError(err, 1)
@@ -20,7 +22,18 @@ func GetCommitsHandler(c echo.Context) error {
 		limit = limitMax
 	}
 
-	commits, err := models.GetCommitsList(limit)
+	// Tri
+	// ---
+	const defaultSort = "ASC"
+	sort := strings.ToUpper(c.QueryParam("sort"))
+
+	if sort != "ASC" && sort != "DESC" {
+		sort = defaultSort
+	}
+
+	// Récupération des commits
+	// ------------------------
+	commits, err := models.GetCommitsList(limit, sort)
 	toolbox.CheckError(err, 1)
 
 	return c.JSON(http.StatusOK, commits)

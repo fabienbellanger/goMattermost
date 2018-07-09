@@ -125,11 +125,11 @@ func AddCommit(repository string, commit CommitInformation) (commitDB CommitDB, 
 }
 
 // GetCommitsList : Liste des commits
-func GetCommitsList(limit int) ([]CommitJSON, error) {
+func GetCommitsList(limit int, sort string) ([]CommitJSON, error) {
 	query := `
 		SELECT id, project, version, author, subject, description, developers, testers, created_at
 		FROM commit
-		ORDER BY created_at DESC
+		ORDER BY created_at ` + sort + `
 		LIMIT ?`
 	rows, err := database.Select(query, limit)
 
