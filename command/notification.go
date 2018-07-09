@@ -45,6 +45,7 @@ var NotificationCommand = &cobra.Command{
 
 	Run: func(cmd *cobra.Command, args []string) {
 		color.Yellow(`
+
 |-------------------------------------------------------------------------------|
 |                                                                               |
 | Send data of the last commit done on master branch to Mattermost and/or Slack |
