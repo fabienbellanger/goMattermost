@@ -24,6 +24,7 @@ type payload struct {
 	Username  string `json:"username"`
 	Channel   string `json:"channel"`
 	IconEmoji string `json:"icon_emoji"`
+	Markdown  bool   `json:"mrkdwn"`
 }
 
 // Launch : Lancement du traitement
@@ -198,14 +199,15 @@ func formatPayloadSlack(repository string, commit models.CommitInformation) []by
 		IconEmoji: ":ghost:",
 		Channel:   "#mep",
 		Username:  "mep " + repository,
+		Markdown:  true,
 	}
 	payload.Text = "Mise en production\n"
-	payload.Text += " " + toolbox.Ucfirst(repository)
+	payload.Text += " *" + toolbox.Ucfirst(repository)
 
 	if commit.Version != "" {
 		payload.Text += " - v" + commit.Version
 	}
-	payload.Text += "\n"
+	payload.Text += "*\n"
 
 	if commit.Subject != "" {
 		payload.Text += "Sujet : " + toolbox.Ucfirst(commit.Subject) + "\n"
