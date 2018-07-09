@@ -3,7 +3,7 @@ package models
 import (
 	"database/sql"
 
-	"github.com/fabienbellanger/go-restApi/database"
+	"github.com/fabienbellanger/goMattermost/database"
 )
 
 // UserDB type
@@ -20,7 +20,7 @@ type UserDB struct {
 // CheckLogin : Authentification
 func CheckLogin(username, password string) (UserDB, error) {
 	query := `
-		SELECT id, lastname, firstname, created_at, deleted_at
+		SELECT id, username, lastname, firstname, created_at, deleted_at
 		FROM user
 		WHERE username = ? AND password = ? AND deleted_at IS NULL`
 	rows, err := database.Select(query, username, password)
@@ -28,7 +28,7 @@ func CheckLogin(username, password string) (UserDB, error) {
 	var user UserDB
 
 	for rows.Next() {
-		err = rows.Scan(&user.ID, &user.Lastname, &user.Firstname, &user.CreatedAt, &user.DeletedAt)
+		err = rows.Scan(&user.ID, &user.Username, &user.Lastname, &user.Firstname, &user.CreatedAt, &user.DeletedAt)
 
 		if err != nil {
 			panic(err.Error())

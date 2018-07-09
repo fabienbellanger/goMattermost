@@ -109,3 +109,48 @@ func AddCommit(repository string, commit CommitInformation) (commitDB CommitDB, 
 
 	return
 }
+
+// GetCommitsList : Liste des commits
+func GetCommitsList(limit int) ([]CommitDB, error) {
+	query := `
+		SELECT id, project, version, author, subject, description, developers, testers, created_at
+		FROM commit
+		ORDER BY created_at DESC
+		LIMIT ?`
+	rows, err := database.Select(query, limit)
+
+	var commits = make([]CommitDB, 0)
+	var id uint64
+	var project, subject string
+	var version, author, description, developers, testers sql.NullString
+	var createdAt sql.RawBytes
+
+	for rows.Next() {
+		err = rows.Scan(&id,
+			&project,
+			&version,
+			&author,
+			&subject,
+			&description,
+			&developers,
+			&testers,
+			&createdAt)
+
+		commits = append(commits, CommitDB{
+			id,
+			project,
+			version,
+			author,
+			subject,
+			description,
+			developers,
+			testers,
+			createdAt})
+
+		if err != nil {
+			panic(err.Error())
+		}
+	}
+
+	return commits, err
+}

@@ -6,6 +6,10 @@
         "user": "",
         "password": ""
     },
+    "jwt": {
+        "secretKey": "maclesecrete",
+        "exp": 24
+    },
     "mattermost": {
         "hookUrl": "",
         "hookPayload": ""

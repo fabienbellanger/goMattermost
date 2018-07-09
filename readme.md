@@ -26,3 +26,8 @@
     ```
     make build
     ```
+
+## TODO
+Dans toolbox :
+- conversion strint to int
+- conversion RawByte (date SQL) en string

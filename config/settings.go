@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"time"
 )
 
 // Configuration type
@@ -14,6 +15,10 @@ type Configuration struct {
 		Name     string
 		User     string
 		Password string
+	}
+	JWT struct {
+		SecretKey string
+		Exp       time.Duration
 	}
 	Mattermost struct {
 		HookURL     string
@@ -45,6 +50,18 @@ var DatabaseUser string
 
 // DatabasePassword : Mot de passe
 var DatabasePassword string
+
+// ============================================================================
+//
+// JWT
+//
+// ============================================================================
+
+// JWTSecretKey : Clé secrète JWT
+var JWTSecretKey string
+
+// JWTExp : Durée de validité du token
+var JWTExp time.Duration
 
 // ============================================================================
 //
@@ -95,6 +112,9 @@ func Init() {
 	DatabaseName = configuration.Database.Name
 	DatabaseUser = configuration.Database.User
 	DatabasePassword = configuration.Database.Password
+
+	JWTSecretKey = configuration.JWT.SecretKey
+	JWTExp = time.Hour * configuration.JWT.Exp
 
 	MattermostHookURL = configuration.Mattermost.HookURL
 	MattermostHookPayload = configuration.Mattermost.HookPayload

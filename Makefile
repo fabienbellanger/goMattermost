@@ -22,6 +22,10 @@ runMattermostNoDB:
 	$(GORUN) main.go mattermost -r project/ -p . --no-database -a slack
 mattermostNoDB: install runMattermostNoDB
 
+runApi:
+	$(GORUN) main.go web
+serve: install runApi
+
 build: 
 	$(GOBUILD) -o $(BINARY_NAME) -v
 
@@ -39,6 +43,6 @@ run-prod:
 
 deps:
 	$(GOGET) -u github.com/spf13/cobra/cobra
-	# $(GOGET) -u github.com/labstack/echo/...
+	$(GOGET) -u github.com/labstack/echo/...
 	$(GOGET) -u github.com/go-sql-driver/mysql
 	$(GOGET) -u github.com/fatih/color
