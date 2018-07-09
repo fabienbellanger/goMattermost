@@ -4,12 +4,13 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"net/http"
+	"net/url"
 	"os/exec"
 	"regexp"
 	"strconv"
 	"strings"
 
-	"github.com/fabienbellanger/goMattermost/config"
 	"github.com/fabienbellanger/goMattermost/models"
 	"github.com/fabienbellanger/goMattermost/toolbox"
 	"github.com/fatih/color"
@@ -19,7 +20,10 @@ var hookURL, hookPayload string
 
 // payload structure
 type payload struct {
-	Text string `json:"text"`
+	Text      string `json:"text"`
+	Username  string `json:"username"`
+	Channel   string `json:"channel"`
+	IconEmoji string `json:"icon_emoji"`
 }
 
 // Launch : Lancement du traitement
@@ -36,12 +40,19 @@ func Launch(path, repository string, noDatabase, sendToMattermost, sendToSlack b
 
 	// Formattage du payload
 	// ---------------------
-	payloadJSONEncoded := formatPayload(repository, commit)
+	payloadJSONEncodedMattermost := formatPayloadMattermost(repository, commit)
+	payloadJSONEncodedSlack := formatPayloadSlack(repository, commit)
 
 	// Envoi à Mattermost
 	// ------------------
 	if sendToMattermost {
-		sendNotificationToMattermost(payloadJSONEncoded)
+		sendNotificationToMattermost(payloadJSONEncodedMattermost)
+	}
+
+	// Envoi à Slack
+	// -------------
+	if sendToSlack {
+		sendNotificationToSlack(payloadJSONEncodedSlack)
 	}
 
 	// Enregistrement du commit en base de données
@@ -125,17 +136,12 @@ func isCommitValid(commit models.CommitInformation) bool {
 		commit.Description != "")
 }
 
-// formatPayload : Mise en forme du payload
-func formatPayload(repository string, commit models.CommitInformation) []byte {
+// formatPayloadMattermost : Mise en forme du payload au format Markdown
+func formatPayloadMattermost(repository string, commit models.CommitInformation) []byte {
 	if !isCommitValid(commit) {
 		err := errors.New("No Git repository found")
 		toolbox.CheckError(err, 2)
 	}
-
-	// Récupération des paramètres
-	// ---------------------------
-	hookURL = config.MattermostHookURL
-	hookPayload = config.MattermostHookPayload
 
 	// Création du payload à transmettre
 	// ---------------------------------
@@ -176,4 +182,77 @@ func formatPayload(repository string, commit models.CommitInformation) []byte {
 	toolbox.CheckError(err, 3)
 
 	return payloadJSONEncoded
+}
+
+// formatPayloadSlack : Mise en forme du payload au format Texte
+func formatPayloadSlack(repository string, commit models.CommitInformation) []byte {
+	if !isCommitValid(commit) {
+		err := errors.New("No Git repository found")
+		toolbox.CheckError(err, 2)
+	}
+
+	// Création du payload à transmettre
+	// ---------------------------------
+	payload := payload{
+		Text:      "",
+		IconEmoji: ":ghost:",
+		Channel:   "#mep",
+		Username:  "mep " + repository,
+	}
+	payload.Text = "Mise en production\n"
+	payload.Text += " " + toolbox.Ucfirst(repository)
+
+	if commit.Version != "" {
+		payload.Text += " - v" + commit.Version
+	}
+	payload.Text += "\n"
+
+	if commit.Subject != "" {
+		payload.Text += "Sujet : " + toolbox.Ucfirst(commit.Subject) + "\n"
+	}
+
+	if commit.Author != "" {
+		payload.Text += "Auteur : " + toolbox.Ucfirst(commit.Author) + "\n"
+	}
+
+	if commit.Developers != "" {
+		payload.Text += "Développeur(s) : " + commit.Developers + "\n"
+	}
+
+	if commit.Testers != "" {
+		payload.Text += "Testeur(s) : " + commit.Testers + "\n"
+	}
+
+	if commit.Description != "" {
+		payload.Text += "Description :\n" + commit.Description + "\n"
+	}
+
+	payloadJSONEncoded, err := json.Marshal(payload)
+	toolbox.CheckError(err, 3)
+
+	return payloadJSONEncoded
+}
+
+// sendNotificationToApplication : Envoi du webhook à l'applicatif
+func sendNotificationToApplication(hookURL, hookPayload string, payloadJSONEncoded []byte) *http.Response {
+	// Construction de la requête
+	// --------------------------
+	data := url.Values{}
+	data.Set("payload", string(payloadJSONEncoded))
+
+	u, err := url.ParseRequestURI(hookURL + hookPayload)
+	toolbox.CheckError(err, 4)
+	urlStr := u.String()
+
+	client := &http.Client{}
+	r, _ := http.NewRequest("POST", urlStr, strings.NewReader(data.Encode()))
+	r.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+	r.Header.Add("Content-Length", strconv.Itoa(len(data.Encode())))
+
+	// Envoi de la requête
+	// -------------------
+	response, err := client.Do(r)
+	toolbox.CheckError(err, 5)
+
+	return response
 }

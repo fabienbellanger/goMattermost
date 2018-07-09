@@ -15,7 +15,7 @@ install:
 	$(GOINSTALL) ./...
 
 runMattermost:
-	$(GORUN) main.go mattermost -r project/ -p . -a slack,mattermost
+	$(GORUN) main.go mattermost -r project/ -p . -a slack
 mattermost: install runMattermost
 
 runMattermostNoDB:
