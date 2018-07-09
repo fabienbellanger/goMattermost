@@ -3,6 +3,7 @@ package models
 import (
 	"database/sql"
 	"errors"
+	"time"
 
 	"github.com/fabienbellanger/goMattermost/database"
 	"github.com/fabienbellanger/goMattermost/toolbox"
@@ -19,6 +20,19 @@ type CommitDB struct {
 	Developers  sql.NullString
 	Testers     sql.NullString
 	CreatedAt   sql.RawBytes
+}
+
+// CommitJSON type
+type CommitJSON struct {
+	ID          uint64 `json:"id" xml:"id"`
+	Project     string `json:"project" xml:"project"`
+	Version     string `json:"version" xml:"version"`
+	Author      string `json:"author" xml:"author"`
+	Subject     string `json:"subject" xml:"subject"`
+	Description string `json:"description" xml:"description"`
+	Developers  string `json:"developers" xml:"developers"`
+	Testers     string `json:"testers" xml:"testers"`
+	CreatedAt   string `json:"createdAt" xml:"createdAt"`
 }
 
 // CommitInformation structure
@@ -111,7 +125,7 @@ func AddCommit(repository string, commit CommitInformation) (commitDB CommitDB, 
 }
 
 // GetCommitsList : Liste des commits
-func GetCommitsList(limit int) ([]CommitDB, error) {
+func GetCommitsList(limit int) ([]CommitJSON, error) {
 	query := `
 		SELECT id, project, version, author, subject, description, developers, testers, created_at
 		FROM commit
@@ -119,14 +133,15 @@ func GetCommitsList(limit int) ([]CommitDB, error) {
 		LIMIT ?`
 	rows, err := database.Select(query, limit)
 
-	var commits = make([]CommitDB, 0)
+	var commits = make([]CommitJSON, 0)
 	var id uint64
 	var project, subject string
 	var version, author, description, developers, testers sql.NullString
 	var createdAt sql.RawBytes
 
 	for rows.Next() {
-		err = rows.Scan(&id,
+		err = rows.Scan(
+			&id,
 			&project,
 			&version,
 			&author,
@@ -136,16 +151,18 @@ func GetCommitsList(limit int) ([]CommitDB, error) {
 			&testers,
 			&createdAt)
 
-		commits = append(commits, CommitDB{
+		datetime, _ := time.Parse(time.RFC3339, string(createdAt))
+
+		commits = append(commits, CommitJSON{
 			id,
 			project,
-			version,
-			author,
+			version.String,
+			author.String,
 			subject,
-			description,
-			developers,
-			testers,
-			createdAt})
+			description.String,
+			developers.String,
+			testers.String,
+			datetime.Format("2006-01-02 15:04:05")})
 
 		if err != nil {
 			panic(err.Error())
