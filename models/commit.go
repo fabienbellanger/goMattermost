@@ -3,6 +3,9 @@ package models
 import (
 	"database/sql"
 	"errors"
+	"os/exec"
+	"regexp"
+	"strings"
 	"time"
 
 	"github.com/fabienbellanger/goMattermost/database"
@@ -43,6 +46,72 @@ type CommitInformation struct {
 	Developers  string
 	Testers     string
 	Description string
+}
+
+// FormatRepositoryName : Formattage du nom du répository
+func FormatRepositoryName(repository *string) {
+	s := *repository
+	lastIndex := strings.LastIndex(s, "/")
+
+	repositoryLen := len(s)
+
+	if lastIndex == repositoryLen-1 {
+		*repository = s[0 : repositoryLen-1]
+	}
+}
+
+// FormatGitCommit : Formattage du commit
+func FormatGitCommit(gitLogOutput []byte, commit *CommitInformation) {
+	message := ""
+	regex := regexp.MustCompile("(?m)(?s)<(.*)>\n<(.*)>\n<(.*)>")
+
+	for _, match := range regex.FindAllSubmatch(gitLogOutput, -1) {
+		if len(match) == 4 {
+			commit.Author = string(match[1])
+			commit.Subject = string(match[2])
+			message = string(match[3])
+		}
+	}
+
+	// Mise en forme du message
+	// ------------------------
+	if message != "" {
+		regexMessage := regexp.MustCompile("(?s)Version : (.*)\nDev : (.*)\n(?:Test|Tests) : (.*)\nDescription :\n(.*)")
+
+		for _, matchMessage := range regexMessage.FindAllSubmatch([]byte(message), -1) {
+			if len(matchMessage) == 5 {
+				commit.Version = string(matchMessage[1])
+				commit.Developers = string(matchMessage[2])
+				commit.Testers = string(matchMessage[3])
+				commit.Description = string(matchMessage[4])
+			}
+		}
+	}
+}
+
+// RetrieveCommit : Récupération du dernier commit Git de master
+func RetrieveCommit(path string) []byte {
+	gitLogCommand := exec.Command("git",
+		"log",
+		"-1",
+		"--pretty=format:<%an>%n<%s>%n<%b>",
+		"--first-parent", "master",
+	)
+	gitLogCommand.Dir = path
+	gitLogOutput, err := gitLogCommand.Output()
+	toolbox.CheckError(err, 1)
+
+	return gitLogOutput
+}
+
+// IsCommitValid : Les informations du commit sont-elles valides ?
+func IsCommitValid(commit CommitInformation) bool {
+	return (commit.Author != "" ||
+		commit.Subject != "" ||
+		commit.Version != "" ||
+		commit.Developers != "" ||
+		commit.Testers != "" ||
+		commit.Description != "")
 }
 
 // newCommitDBFromCommitInformation : Création d'une variable de type CommitDB

@@ -4,6 +4,82 @@ import (
 	"testing"
 )
 
+// TestIsCommitValid : Test de la fonction IsCommitValid
+func TestIsCommitValid(t *testing.T) {
+	// Test avec un commit vide
+	// ------------------------
+	commitEmpty := CommitInformation{}
+	isCommitEmptyValid := IsCommitValid(commitEmpty)
+
+	if IsCommitValid(commitEmpty) {
+		t.Errorf("IsCommitValid - got: %t, want: %t.", isCommitEmptyValid, false)
+	}
+
+	// Test avec un commit non vide
+	// ----------------------------
+	commit1 := CommitInformation{}
+	commit1.Author = "Fabien Bellanger"
+	commit1.Version = "1.0.0"
+	isCommit1Valid := IsCommitValid(commit1)
+
+	if !isCommit1Valid {
+		t.Errorf("IsCommitValid - got: %t, want: %t.", isCommit1Valid, true)
+	}
+}
+
+// TestFormatGitCommit : Test du formattage du dernier commit sur master
+func TestFormatGitCommit(t *testing.T) {
+	// Commit complet
+	gitlog1 := []byte("<Fabien>\n<Subject>\n<Message>")
+	commit1 := CommitInformation{}
+
+	FormatGitCommit(gitlog1, &commit1)
+
+	if commit1.Author == "" || commit1.Subject == "" {
+		t.Error("FormatGitCommit - got: empty commit, want: commit with info.")
+	}
+
+	// Commit vide
+	gitlog2 := []byte("<>\n<>\n<>")
+	commit2 := CommitInformation{}
+
+	FormatGitCommit(gitlog2, &commit2)
+
+	if commit2.Author != "" && commit2.Subject != "" {
+		t.Error("FormatGitCommit - got: not empty commit, want: empty commit.")
+	}
+}
+
+// TestFormatRepositoryName : Test du formattage du nom du repository
+func TestFormatRepositoryName(t *testing.T) {
+	rRef := "repo/"
+	rGood := "repo"
+	r := rRef
+	FormatRepositoryName(&r)
+
+	if r != rGood {
+		t.Errorf("FormatRepositoryName - got: %s, want: %s.", r, rGood)
+	}
+
+	rRef = "repo"
+	rGood = "repo"
+	r = rRef
+	FormatRepositoryName(&r)
+
+	if r != rGood {
+		t.Errorf("FormatRepositoryName - got: %s, want: %s.", r, rGood)
+	}
+
+	rRef = "/repo/sub/"
+	rGood = "/repo/sub"
+	r = rRef
+	FormatRepositoryName(&r)
+
+	if r != rGood {
+		t.Errorf("FormatRepositoryName - got: %s, want: %s.", r, rGood)
+	}
+}
+
 // TestNewCommitDBFromCommitInformation : Test de la création d'une variable de type CommitDB
 func TestNewCommitDBFromCommitInformation(t *testing.T) {
 	repository := "repo"
