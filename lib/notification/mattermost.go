@@ -2,13 +2,13 @@ package notification
 
 import (
 	"fmt"
+	"net/http"
 
 	"github.com/fabienbellanger/goMattermost/config"
-	"github.com/fatih/color"
 )
 
 // sendNotificationToMattermost : Envoi sur le Webhook de Mattermost
-func sendNotificationToMattermost(payloadJSONEncoded []byte) {
+func sendNotificationToMattermost(payloadJSONEncoded []byte, response chan<- *http.Response) {
 	fmt.Println("Sending notification to Mattermost...")
 
 	// Récupération des paramètres
@@ -18,8 +18,5 @@ func sendNotificationToMattermost(payloadJSONEncoded []byte) {
 
 	// Envoi de la requête
 	// -------------------
-	response := sendNotificationToApplication(hookURL, hookPayload, payloadJSONEncoded)
-
-	fmt.Print(" -> Mattermost response: ")
-	color.Green(response.Status + "\n\n")
+	response <- sendNotificationToApplication(hookURL, hookPayload, payloadJSONEncoded)
 }

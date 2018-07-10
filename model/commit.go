@@ -161,7 +161,7 @@ func newCommitDBFromCommitInformation(repository string, commit CommitInformatio
 }
 
 // AddCommit : Ajout d'un commit en base de données
-func AddCommit(repository string, commit CommitInformation) (commitDB CommitDB, errInsert error) {
+func AddCommit(repository string, commit CommitInformation, commitDBChan chan<- CommitDB, errInsert chan<- error) {
 	// Tests des données
 	// -----------------
 	if len(repository) == 0 || len(commit.Subject) == 0 {
@@ -169,7 +169,7 @@ func AddCommit(repository string, commit CommitInformation) (commitDB CommitDB, 
 		toolbox.CheckError(err, 1)
 	}
 
-	commitDB = newCommitDBFromCommitInformation(repository, commit)
+	commitDB := newCommitDBFromCommitInformation(repository, commit)
 
 	query := `
 		INSERT INTO commit(project, version, author, subject, description, developers, testers, created_at)
@@ -184,13 +184,13 @@ func AddCommit(repository string, commit CommitInformation) (commitDB CommitDB, 
 		commitDB.Developers,
 		commitDB.Testers)
 
-	errInsert = err
+	errInsert <- err
 
 	if err == nil {
 		commitDB.ID = uint64(id)
 	}
 
-	return
+	commitDBChan <- commitDB
 }
 
 // GetCommitsList : Liste des commits

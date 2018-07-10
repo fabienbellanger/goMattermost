@@ -45,30 +45,63 @@ func Launch(path, repository string, noDatabase, sendToMattermost, sendToSlack b
 
 	// Envoi à Mattermost
 	// ------------------
+	var responseMattermostChan chan *http.Response
+
 	if sendToMattermost {
-		sendNotificationToMattermost(payloadJSONEncodedMattermost)
+		responseMattermostChan = make(chan *http.Response)
+		go sendNotificationToMattermost(payloadJSONEncodedMattermost, responseMattermostChan)
 	}
 
 	// Envoi à Slack
 	// -------------
+	var responseSlackChan chan *http.Response
+
 	if sendToSlack {
-		sendNotificationToSlack(payloadJSONEncodedSlack)
+		responseSlackChan = make(chan *http.Response)
+		go sendNotificationToSlack(payloadJSONEncodedSlack, responseSlackChan)
 	}
 
 	// Enregistrement du commit en base de données
 	// -------------------------------------------
+	var commitDBChan chan model.CommitDB
+	var errorInsertChan chan error
 	if !noDatabase {
 		fmt.Println("Inserting commit into database...")
 
-		commitDB, err := model.AddCommit(repository, commit)
+		commitDBChan = make(chan model.CommitDB)
+		errorInsertChan = make(chan error)
 
-		if err != nil {
-			color.Red(" -> Error during inserting commit in database\n\n")
+		go model.AddCommit(repository, commit, commitDBChan, errorInsertChan)
+	}
+
+	// Réponses asynchrones
+	// --------------------
+	if sendToMattermost {
+		responseMattermost := <-responseMattermostChan
+
+		fmt.Print(" -> Mattermost response: \t")
+		color.Green(responseMattermost.Status + "\n")
+	}
+
+	if sendToSlack {
+		responseSlack := <-responseSlackChan
+
+		fmt.Print(" -> Slack response: \t\t")
+		color.Green(responseSlack.Status + "\n")
+	}
+
+	if !noDatabase {
+		if <-errorInsertChan != nil {
+			color.Red(" -> Error during inserting commit in database\n")
 		} else {
-			fmt.Print(" -> Commit inserted with ID: ")
-			color.Green(strconv.FormatInt(int64(commitDB.ID), 10) + "\n\n")
+			commitDB := <-commitDBChan
+
+			fmt.Print(" -> Commit inserted with ID: \t")
+			color.Green(strconv.FormatInt(int64(commitDB.ID), 10) + "\n")
 		}
 	}
+
+	fmt.Println("")
 }
 
 // formatPayloadMattermost : Mise en forme du payload au format Markdown

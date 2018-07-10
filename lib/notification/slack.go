@@ -2,13 +2,13 @@ package notification
 
 import (
 	"fmt"
+	"net/http"
 
 	"github.com/fabienbellanger/goMattermost/config"
-	"github.com/fatih/color"
 )
 
 // sendNotificationToSlack : Envoi sur le Webhook de Slack
-func sendNotificationToSlack(payloadJSONEncoded []byte) {
+func sendNotificationToSlack(payloadJSONEncoded []byte, response chan<- *http.Response) {
 	fmt.Println("Sending notification to Slack...")
 
 	// Récupération des paramètres
@@ -18,8 +18,5 @@ func sendNotificationToSlack(payloadJSONEncoded []byte) {
 
 	// Envoi de la requête
 	// -------------------
-	response := sendNotificationToApplication(hookURL, hookPayload, payloadJSONEncoded)
-
-	fmt.Print(" -> Slack response: ")
-	color.Green(response.Status + "\n\n")
+	response <- sendNotificationToApplication(hookURL, hookPayload, payloadJSONEncoded)
 }
