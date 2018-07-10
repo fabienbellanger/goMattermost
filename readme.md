@@ -29,5 +29,5 @@
 
 ## TODO
 Dans toolbox :
-- conversion strint to int
+- conversion string <=> int
 - conversion RawByte (date SQL) en string

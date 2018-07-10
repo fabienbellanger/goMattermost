@@ -14,13 +14,13 @@ all: test build
 install:
 	$(GOINSTALL) ./...
 
-runMattermost:
-	$(GORUN) main.go mattermost -r project/ -p . -a slack
-mattermost: install runMattermost
+runNotification:
+	$(GORUN) main.go notification -r project/ -p . -a slack
+notification: install runNotification
 
-runMattermostNoDB:
-	$(GORUN) main.go mattermost -r project/ -p . --no-database -a slack
-mattermostNoDB: install runMattermostNoDB
+runNotificationNoDB:
+	$(GORUN) main.go notification -r project/ -p . --no-database -a slack
+notificationNoDB: install runNotificationNoDB
 
 runApi:
 	$(GORUN) main.go web

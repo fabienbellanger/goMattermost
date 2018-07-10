@@ -40,7 +40,7 @@ func init() {
 
 // NotificationCommand : Notification command
 var NotificationCommand = &cobra.Command{
-	Use:   "mattermost",
+	Use:   "notification",
 	Short: "Send message to Mattermost and/or Slack",
 
 	Run: func(cmd *cobra.Command, args []string) {
