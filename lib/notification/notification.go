@@ -1,4 +1,4 @@
-package mattermost
+package notification
 
 import (
 	"encoding/json"

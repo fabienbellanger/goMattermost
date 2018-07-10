@@ -6,7 +6,7 @@ import (
 
 	"github.com/fabienbellanger/goMattermost/config"
 	"github.com/fabienbellanger/goMattermost/database"
-	notification "github.com/fabienbellanger/goMattermost/lib"
+	"github.com/fabienbellanger/goMattermost/lib/notification"
 	"github.com/fabienbellanger/goMattermost/toolbox"
 	"github.com/fatih/color"
 	"github.com/spf13/cobra"

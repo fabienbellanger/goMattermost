@@ -1,4 +1,4 @@
-package mattermost
+package notification
 
 import (
 	"fmt"
@@ -7,19 +7,19 @@ import (
 	"github.com/fatih/color"
 )
 
-// sendNotificationToMattermost : Envoi sur le Webhook de Mattermost
-func sendNotificationToMattermost(payloadJSONEncoded []byte) {
-	fmt.Println("Sending notification to Mattermost...")
+// sendNotificationToSlack : Envoi sur le Webhook de Slack
+func sendNotificationToSlack(payloadJSONEncoded []byte) {
+	fmt.Println("Sending notification to Slack...")
 
 	// Récupération des paramètres
 	// ---------------------------
-	hookURL = config.MattermostHookURL
-	hookPayload = config.MattermostHookPayload
+	hookURL = config.SlackHookURL
+	hookPayload = config.SlackHookPayload
 
 	// Envoi de la requête
 	// -------------------
 	response := sendNotificationToApplication(hookURL, hookPayload, payloadJSONEncoded)
 
-	fmt.Print(" -> Mattermost response: ")
+	fmt.Print(" -> Slack response: ")
 	color.Green(response.Status + "\n\n")
 }
