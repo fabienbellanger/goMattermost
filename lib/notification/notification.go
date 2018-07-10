@@ -142,17 +142,13 @@ func formatPayloadSlack(repository string, commit model.CommitInformation) []byt
 		Text:      "",
 		IconEmoji: ":ghost:",
 		Channel:   "#mep",
-		Username:  "mep " + repository,
+		Username:  "Mise en production : " + toolbox.Ucfirst(repository),
 		Markdown:  true,
 	}
-	payload.Text = "Mise en production\n"
-	payload.Text += " *" + toolbox.Ucfirst(repository)
 
 	if commit.Version != "" {
-		payload.Text += " - v" + commit.Version
+		payload.Username += " - v" + commit.Version
 	}
-
-	payload.Text += "*\n"
 
 	payload.Text += "_Date et heure_ : " + datetime + "\n"
 
