@@ -15,11 +15,11 @@ install:
 	$(GOINSTALL) ./...
 
 runNotification:
-	$(GORUN) main.go notification -r project/ -p . -a slack,mattermost
+	$(GORUN) main.go notification -r project/ -p . -a mattermost
 notification: install runNotification
 
 runNotificationNoDB:
-	$(GORUN) main.go notification -r project/ -p . --no-database -a slack,mattermost
+	$(GORUN) main.go notification -r project/ -p . --no-database -a mattermost
 notificationNoDB: install runNotificationNoDB
 
 runApi:
