@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/fabienbellanger/goMattermost/config"
-	"github.com/fabienbellanger/goMattermost/models"
+	"github.com/fabienbellanger/goMattermost/model"
 
 	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/labstack/echo"
@@ -20,7 +20,7 @@ func PostAuthLoginHandler(c echo.Context) error {
 
 	// Vérification en base
 	// --------------------
-	user, err := models.CheckLogin(username, password)
+	user, err := model.CheckLogin(username, password)
 
 	if err == nil && user.ID != 0 {
 		// Création du token d'authentification

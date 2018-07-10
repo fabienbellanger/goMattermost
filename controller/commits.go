@@ -5,7 +5,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/fabienbellanger/goMattermost/models"
+	"github.com/fabienbellanger/goMattermost/model"
 	"github.com/fabienbellanger/goMattermost/toolbox"
 	"github.com/labstack/echo"
 )
@@ -33,7 +33,7 @@ func GetCommitsHandler(c echo.Context) error {
 
 	// Récupération des commits
 	// ------------------------
-	commits, err := models.GetCommitsList(limit, sort)
+	commits, err := model.GetCommitsList(limit, sort)
 	toolbox.CheckError(err, 0)
 
 	return c.JSON(http.StatusOK, commits)

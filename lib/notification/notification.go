@@ -10,7 +10,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/fabienbellanger/goMattermost/models"
+	"github.com/fabienbellanger/goMattermost/model"
 	"github.com/fabienbellanger/goMattermost/toolbox"
 	"github.com/fatih/color"
 )
@@ -30,13 +30,13 @@ type payload struct {
 func Launch(path, repository string, noDatabase, sendToMattermost, sendToSlack bool) {
 	// Récupération du dernier commit Git de master
 	// --------------------------------------------
-	gitLogOutput := models.RetrieveCommit(path)
+	gitLogOutput := model.RetrieveCommit(path)
 
 	// Formattage du commit et du repository
 	// -------------------------------------
-	commit := models.CommitInformation{}
-	models.FormatGitCommit(gitLogOutput, &commit)
-	models.FormatRepositoryName(&repository)
+	commit := model.CommitInformation{}
+	model.FormatGitCommit(gitLogOutput, &commit)
+	model.FormatRepositoryName(&repository)
 
 	// Formattage du payload
 	// ---------------------
@@ -60,7 +60,7 @@ func Launch(path, repository string, noDatabase, sendToMattermost, sendToSlack b
 	if !noDatabase {
 		fmt.Println("Inserting commit into database...")
 
-		commitDB, err := models.AddCommit(repository, commit)
+		commitDB, err := model.AddCommit(repository, commit)
 
 		if err != nil {
 			color.Red(" -> Error during inserting commit in database\n\n")
@@ -72,8 +72,8 @@ func Launch(path, repository string, noDatabase, sendToMattermost, sendToSlack b
 }
 
 // formatPayloadMattermost : Mise en forme du payload au format Markdown
-func formatPayloadMattermost(repository string, commit models.CommitInformation) []byte {
-	if !models.IsCommitValid(commit) {
+func formatPayloadMattermost(repository string, commit model.CommitInformation) []byte {
+	if !model.IsCommitValid(commit) {
 		err := errors.New("No Git repository found")
 		toolbox.CheckError(err, 2)
 	}
@@ -126,8 +126,8 @@ func formatPayloadMattermost(repository string, commit models.CommitInformation)
 }
 
 // formatPayloadSlack : Mise en forme du payload au format Texte
-func formatPayloadSlack(repository string, commit models.CommitInformation) []byte {
-	if !models.IsCommitValid(commit) {
+func formatPayloadSlack(repository string, commit model.CommitInformation) []byte {
+	if !model.IsCommitValid(commit) {
 		err := errors.New("No Git repository found")
 		toolbox.CheckError(err, 2)
 	}
