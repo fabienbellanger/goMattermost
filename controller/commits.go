@@ -16,7 +16,7 @@ func GetCommitsHandler(c echo.Context) error {
 	// ---------------------------
 	const limitMax = 50
 	limit, err := strconv.Atoi(c.QueryParam("limit"))
-	toolbox.CheckError(err, 1)
+	toolbox.CheckError(err, 0)
 
 	if limit > limitMax {
 		limit = limitMax
@@ -34,7 +34,7 @@ func GetCommitsHandler(c echo.Context) error {
 	// Récupération des commits
 	// ------------------------
 	commits, err := models.GetCommitsList(limit, sort)
-	toolbox.CheckError(err, 1)
+	toolbox.CheckError(err, 0)
 
 	return c.JSON(http.StatusOK, commits)
 }
