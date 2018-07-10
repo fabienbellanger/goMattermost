@@ -10,6 +10,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/fabienbellanger/goMattermost/models"
 	"github.com/fabienbellanger/goMattermost/toolbox"
@@ -144,6 +145,10 @@ func formatPayloadMattermost(repository string, commit models.CommitInformation)
 		toolbox.CheckError(err, 2)
 	}
 
+	// Date et heure de la mise en production
+	// --------------------------------------
+	datetime := time.Now().Format("02/01/2006 à *15:04*")
+
 	// Création du payload à transmettre
 	// ---------------------------------
 	payload := payload{
@@ -162,6 +167,8 @@ func formatPayloadMattermost(repository string, commit models.CommitInformation)
 	}
 
 	payload.Text += "|:---|:---|\n"
+
+	payload.Text += "| Date et heure | " + datetime + " |\n"
 
 	if commit.Author != "" {
 		payload.Text += "| Auteur |" + toolbox.Ucfirst(commit.Author) + "|\n"
@@ -192,6 +199,10 @@ func formatPayloadSlack(repository string, commit models.CommitInformation) []by
 		toolbox.CheckError(err, 2)
 	}
 
+	// Date et heure de la mise en production
+	// --------------------------------------
+	datetime := time.Now().Format("02/01/2006 à *15:04*")
+
 	// Création du payload à transmettre
 	// ---------------------------------
 	payload := payload{
@@ -207,7 +218,10 @@ func formatPayloadSlack(repository string, commit models.CommitInformation) []by
 	if commit.Version != "" {
 		payload.Text += " - v" + commit.Version
 	}
+
 	payload.Text += "*\n"
+
+	payload.Text += "_Date et heure_ : " + datetime + "\n"
 
 	if commit.Subject != "" {
 		payload.Text += "_Sujet_ : " + toolbox.Ucfirst(commit.Subject) + "\n"
