@@ -44,3 +44,18 @@ func GetCommitsHandler(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, commits)
 }
+
+// GetCommitHandler : Récupération d'un commit
+func GetCommitHandler(c echo.Context) error {
+	idParam := c.Param("id")
+	id, err := strconv.Atoi(idParam)
+	toolbox.CheckError(err, 0)
+
+	if id != 0 {
+
+	}
+
+	var err1 error
+
+	return err1
+}

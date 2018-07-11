@@ -16,4 +16,5 @@ func commitsRoutes(e *echo.Echo, g *echo.Group) {
 
 	// Liste des routes
 	commitsGroup.GET("", controller.GetCommitsHandler)
+	commitsGroup.GET("/:id", controller.GetCommitHandler)
 }

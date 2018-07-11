@@ -240,3 +240,52 @@ func GetCommitsList(limit int, sort string) ([]CommitJSON, error) {
 
 	return commits, err
 }
+
+// GetCommit : Récupération d'un commit
+func GetCommit(id int) (CommitJSON, error) {
+	query := `
+		SELECT id, project, version, author, subject, description, developers, testers, created_at
+		FROM commit
+		WHERE id = ?
+		ORDER BY created_at ` + sort + `
+		LIMIT 1`
+	rows, err := database.Select(query, id)
+
+	var commits = CommitJSON
+	var id uint64
+	var project, subject string
+	var version, author, description, developers, testers sql.NullString
+	var createdAt sql.RawBytes
+
+	for rows.Next() {
+		err = rows.Scan(
+			&id,
+			&project,
+			&version,
+			&author,
+			&subject,
+			&description,
+			&developers,
+			&testers,
+			&createdAt)
+
+		datetime, _ := time.Parse(time.RFC3339, string(createdAt))
+
+		commits = append(commits, CommitJSON{
+			id,
+			project,
+			version.String,
+			author.String,
+			subject,
+			description.String,
+			developers.String,
+			testers.String,
+			datetime.Format("2006-01-02 15:04:05")})
+
+		if err != nil {
+			panic(err.Error())
+		}
+	}
+
+	return commits, err
+}
