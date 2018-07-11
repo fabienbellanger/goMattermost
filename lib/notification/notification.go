@@ -113,7 +113,7 @@ func formatPayloadMattermost(repository string, commit model.CommitInformation) 
 
 	// Date et heure de la mise en production
 	// --------------------------------------
-	datetime := time.Now().Format("02/01/2006 à *15:04*")
+	datetime := time.Now().Format("02/01/2006 à 15:04")
 
 	// Création du payload à transmettre
 	// ---------------------------------

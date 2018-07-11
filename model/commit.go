@@ -76,7 +76,7 @@ func FormatGitCommit(gitLogOutput []byte, commit *CommitInformation) {
 	// Mise en forme du message
 	// ------------------------
 	if message != "" {
-		regexMessage := regexp.MustCompile("(?s)Version : (.*)\nDev : (.*)\n(?:Test|Tests) : (.*)\nDescription :\n(.*)")
+		regexMessage := regexp.MustCompile(`(?s)Version(?:\s)?: (.*)\nDev(?:\s)?: (.*)\n(?:Test|Tests)(?:\s)?: (.*)\nDescription(?:\s)?:\n(.*)`)
 
 		for _, matchMessage := range regexMessage.FindAllSubmatch([]byte(message), -1) {
 			if len(matchMessage) == 5 {
