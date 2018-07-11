@@ -15,8 +15,14 @@ func GetCommitsHandler(c echo.Context) error {
 	// Limit du nombre de résultat
 	// ---------------------------
 	const limitMax = 50
-	limit, err := strconv.Atoi(c.QueryParam("limit"))
-	toolbox.CheckError(err, 0)
+	limitParam := c.QueryParam("limit")
+	limit := limitMax
+
+	if limitParam != "" {
+		var err error
+		limit, err = strconv.Atoi(limitParam)
+		toolbox.CheckError(err, 0)
+	}
 
 	if limit > limitMax {
 		limit = limitMax

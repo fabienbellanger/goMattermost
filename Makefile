@@ -15,7 +15,7 @@ install:
 	$(GOINSTALL) ./...
 
 runNotification:
-	$(GORUN) main.go notification -r project/ -p . -a mattermost
+	$(GORUN) main.go notification -r project/ -p .
 notification: install runNotification
 
 runNotificationNoDB:
