@@ -51,11 +51,19 @@ func GetCommitHandler(c echo.Context) error {
 	id, err := strconv.Atoi(idParam)
 	toolbox.CheckError(err, 0)
 
-	if id != 0 {
+	commit := model.CommitJSON{}
 
+	if id != 0 {
+		commit, err = model.GetCommit(id)
 	}
 
-	var err1 error
+	var responseError error
 
-	return err1
+	if commit.ID == 0 {
+		responseError = c.JSON(http.StatusNotFound, nil)
+	} else {
+		responseError = c.JSON(http.StatusOK, commit)
+	}
+
+	return responseError
 }
