@@ -183,7 +183,7 @@ func formatPayloadSlack(repository string, commit model.CommitInformation) []byt
 		payload.Username += " - v" + commit.Version
 	}
 
-	payload.Text += "_Date et heure_ : " + datetime + "\n"
+	payload.Text += "_Date et heure_ : " + datetime + "\n\n"
 
 	if commit.Subject != "" {
 		payload.Text += "_Sujet_ : " + toolbox.Ucfirst(commit.Subject) + "\n"
@@ -202,7 +202,7 @@ func formatPayloadSlack(repository string, commit model.CommitInformation) []byt
 	}
 
 	if commit.Description != "" {
-		payload.Text += "_Description_ :\n" + commit.Description + "\n"
+		payload.Text += "\n_Description_ :\n" + commit.Description + "\n"
 	}
 
 	payloadJSONEncoded, err := json.Marshal(payload)

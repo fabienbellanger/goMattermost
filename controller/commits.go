@@ -42,7 +42,9 @@ func GetCommitsHandler(c echo.Context) error {
 	commits, err := model.GetCommitsList(limit, sort)
 	toolbox.CheckError(err, 0)
 
-	return c.JSON(http.StatusOK, commits)
+	response := model.GetHTTPResponse(http.StatusOK, "Success", commits)
+
+	return c.JSON(response.Code, response)
 }
 
 // GetCommitHandler : Récupération d'un commit
@@ -52,18 +54,23 @@ func GetCommitHandler(c echo.Context) error {
 	toolbox.CheckError(err, 0)
 
 	commit := model.CommitJSON{}
+	response := model.HTTPResponse{}
 
 	if id != 0 {
 		commit, err = model.GetCommit(id)
-	}
 
-	var responseError error
-
-	if commit.ID == 0 {
-		responseError = c.JSON(http.StatusNotFound, nil)
+		if commit.ID == 0 {
+			response.Code = http.StatusNotFound
+			response.Message = "No commit found"
+		} else {
+			response.Code = http.StatusOK
+			response.Message = "Success"
+			response.Data = commit
+		}
 	} else {
-		responseError = c.JSON(http.StatusOK, commit)
+		response.Code = http.StatusNotFound
+		response.Message = "No commit found"
 	}
 
-	return responseError
+	return c.JSON(response.Code, response)
 }

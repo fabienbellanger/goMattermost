@@ -44,15 +44,21 @@ func PostAuthLoginHandler(c echo.Context) error {
 			return err
 		}
 
-		return c.JSON(http.StatusOK, map[string]interface{}{
-			"token":     t,
-			"id":        user.ID,
-			"lastname":  user.Lastname,
-			"firstname": user.Firstname,
-			"fullname":  user.GetFullname(),
-			"createdAt": string(user.CreatedAt),
-			"deletedAt": string(user.DeletedAt),
-		})
+		response := model.GetHTTPResponse(
+			http.StatusOK,
+			"Success",
+			map[string]interface{}{
+				"token":     t,
+				"id":        user.ID,
+				"lastname":  user.Lastname,
+				"firstname": user.Firstname,
+				"fullname":  user.GetFullname(),
+				"createdAt": string(user.CreatedAt),
+				"deletedAt": string(user.DeletedAt),
+			},
+		)
+
+		return c.JSON(response.Code, response)
 	}
 
 	return echo.ErrUnauthorized

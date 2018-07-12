@@ -1,10 +1,10 @@
 package controller
 
 import (
-	"fmt"
 	"net/http"
 
 	jwt "github.com/dgrijalva/jwt-go"
+	"github.com/fabienbellanger/goMattermost/model"
 	"github.com/labstack/echo"
 )
 
@@ -21,11 +21,12 @@ func GetUsersInfosHandler(c echo.Context) error {
 	username := claims["username"].(string)
 	exp := claims["exp"].(float64)
 
-	fmt.Println(claims)
-	u := &userType{
+	userType := &userType{
 		Username: username,
 		Exp:      exp,
 	}
 
-	return c.JSON(http.StatusOK, u)
+	response := model.GetHTTPResponse(http.StatusOK, "Success", userType)
+
+	return c.JSON(response.Code, response)
 }
