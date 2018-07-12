@@ -29,10 +29,9 @@ func init() {
 	NotificationCommand.Flags().StringVarP(&path, "path", "p", "", "Path")
 	NotificationCommand.Flags().StringVarP(&repository, "repository", "r", "", "Repository")
 	NotificationCommand.Flags().StringVarP(&applications, "applications", "a", "", "Applications list separate by commat withour whitespace (Ex: -a slack,mattermost)")
+	NotificationCommand.Flags().BoolVarP(&NoDatabase, "no-database", "d", false, "Save data to database")
 	NotificationCommand.MarkFlagRequired("path")
 	NotificationCommand.MarkFlagRequired("repository")
-
-	rootCommand.PersistentFlags().BoolVarP(&NoDatabase, "no-database", "d", false, "Save data to database")
 
 	// Ajout de la commande à la commande racine
 	rootCommand.AddCommand(NotificationCommand)
