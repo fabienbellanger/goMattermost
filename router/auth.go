@@ -11,5 +11,4 @@ func authRoutes(e *echo.Echo, g *echo.Group) {
 
 	// Liste des routes
 	authGroup.POST("/login", controller.PostAuthLoginHandler)
-	authGroup.GET("/logout", controller.GetAuthLogoutHandler)
 }

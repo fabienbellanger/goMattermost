@@ -63,8 +63,3 @@ func PostAuthLoginHandler(c echo.Context) error {
 
 	return echo.ErrUnauthorized
 }
-
-// GetAuthLogoutHandler : Déconnexion
-func GetAuthLogoutHandler(c echo.Context) error {
-	return c.String(http.StatusOK, "Logout")
-}

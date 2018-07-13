@@ -74,3 +74,32 @@ func GetCommitHandler(c echo.Context) error {
 
 	return c.JSON(response.Code, response)
 }
+
+// DeleteCommitHandler : Suppression d'un commit
+func DeleteCommitHandler(c echo.Context) error {
+	idParam := c.Param("id")
+	id, err := strconv.Atoi(idParam)
+	toolbox.CheckError(err, 0)
+
+	response := model.HTTPResponse{}
+
+	if id != 0 {
+		nbDeleted := model.DeleteCommit(id)
+
+		if nbDeleted == 0 {
+			response.Code = http.StatusNotFound
+			response.Message = "No commit found"
+		} else {
+			response.Code = http.StatusOK
+			response.Message = "Success"
+			response.Data = map[string]interface{}{
+				"id": id,
+			}
+		}
+	} else {
+		response.Code = http.StatusNotFound
+		response.Message = "No commit found"
+	}
+
+	return c.JSON(response.Code, response)
+}

@@ -287,3 +287,12 @@ func GetCommit(id int) (CommitJSON, error) {
 
 	return commit, err
 }
+
+// DeleteCommit : Suppression d'un commit
+func DeleteCommit(id int) int64 {
+	query := `DELETE FROM commit WHERE id = ?`
+	nbDeleted, err := database.Delete(query, id)
+	toolbox.CheckError(err, 0)
+
+	return nbDeleted
+}
