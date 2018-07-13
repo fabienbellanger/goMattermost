@@ -15,6 +15,12 @@
         "hookPayload": ""
     },
     "slack": {
-        "hookUrl": "https://hooks.slack.com/services/"
+        "hookUrl": "",
+        "hookPayload": ""
+    },
+    "smtp": {
+        "username": "",
+        "password": "",
+        "host": ""
     }
 }

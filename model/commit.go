@@ -296,3 +296,11 @@ func DeleteCommit(id int) int64 {
 
 	return nbDeleted
 }
+
+// GetDailyCommitsForEmailing : Liste des commits à envoyer quotidiennement par email
+func GetDailyCommitsForEmailing(date time.Time) ([]CommitJSON, error) {
+	var commits []CommitJSON
+	var err error
+
+	return commits, err
+}

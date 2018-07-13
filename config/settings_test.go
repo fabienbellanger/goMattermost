@@ -148,3 +148,22 @@ func TestIsDatebaseConfigCorrect(t *testing.T) {
 		t.Errorf("IsDatabaseConfigCorrect - got: %t, want: %t.", !isCorrect, false)
 	}
 }
+
+// TestIsSMTPServerConfigValid : Test si la configuration de la base de données est correcte
+func TestIsSMTPServerConfigValid(t *testing.T) {
+	SMTPUsername = ""
+	SMTPPassword = ""
+	SMTPHost = ""
+	isCorrect := IsSMTPServerConfigValid()
+
+	if isCorrect {
+		t.Errorf("IsSMTPServerConfigValid - got: %t, want: %t.", isCorrect, false)
+	}
+
+	SMTPHost = "localhost"
+	isCorrect = IsSMTPServerConfigValid()
+
+	if !isCorrect {
+		t.Errorf("IsSMTPServerConfigValid - got: %t, want: %t.", isCorrect, true)
+	}
+}

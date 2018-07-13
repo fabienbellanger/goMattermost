@@ -28,6 +28,11 @@ type Configuration struct {
 		HookURL     string
 		HookPayload string
 	}
+	SMTP struct {
+		Username string
+		Password string
+		Host     string
+	}
 }
 
 // Version of current application
@@ -87,6 +92,21 @@ var SlackHookURL string
 // SlackHookPayload : Payload pour l'envoi de message
 var SlackHookPayload string
 
+// ============================================================================
+//
+// SMTP
+//
+// ============================================================================
+
+// SMTPUsername : Username du serveur SMTP
+var SMTPUsername string
+
+// SMTPPassword : Password du serveur SMTP
+var SMTPPassword string
+
+// SMTPHost : Host du serveur SMTP
+var SMTPHost string
+
 // Init : Lecture du fichier de configuration
 func Init() {
 	// Lecture du fichier de configuration
@@ -121,6 +141,10 @@ func Init() {
 
 	SlackHookURL = configuration.Slack.HookURL
 	SlackHookPayload = configuration.Slack.HookPayload
+
+	SMTPUsername = configuration.SMTP.Username
+	SMTPPassword = configuration.SMTP.Password
+	SMTPHost = configuration.SMTP.Host
 }
 
 // IsMattermostConfigCorrect : La configuration de Mattermost est-elle correcte ?
@@ -136,4 +160,9 @@ func IsSlackConfigCorrect() bool {
 // IsDatabaseConfigCorrect : La configuration de la base de données est-elle correcte ?
 func IsDatabaseConfigCorrect() bool {
 	return (DatabaseDriver != "" && DatabaseName != "" && DatabaseUser != "")
+}
+
+// IsSMTPServerConfigValid : La configuration du serveur SMTP est-elle correcte ?
+func IsSMTPServerConfigValid() bool {
+	return (SMTPHost != "")
 }
