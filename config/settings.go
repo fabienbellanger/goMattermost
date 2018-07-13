@@ -29,9 +29,10 @@ type Configuration struct {
 		HookPayload string
 	}
 	SMTP struct {
+		Host     string
+		Port     string
 		Username string
 		Password string
-		Host     string
 	}
 }
 
@@ -98,14 +99,17 @@ var SlackHookPayload string
 //
 // ============================================================================
 
+// SMTPHost : Host du serveur SMTP
+var SMTPHost string
+
+// SMTPPort : Port  du serveur SMTP
+var SMTPPort string
+
 // SMTPUsername : Username du serveur SMTP
 var SMTPUsername string
 
 // SMTPPassword : Password du serveur SMTP
 var SMTPPassword string
-
-// SMTPHost : Host du serveur SMTP
-var SMTPHost string
 
 // Init : Lecture du fichier de configuration
 func Init() {
@@ -142,9 +146,10 @@ func Init() {
 	SlackHookURL = configuration.Slack.HookURL
 	SlackHookPayload = configuration.Slack.HookPayload
 
+	SMTPHost = configuration.SMTP.Host
+	SMTPPort = configuration.SMTP.Port
 	SMTPUsername = configuration.SMTP.Username
 	SMTPPassword = configuration.SMTP.Password
-	SMTPHost = configuration.SMTP.Host
 }
 
 // IsMattermostConfigCorrect : La configuration de Mattermost est-elle correcte ?

@@ -26,6 +26,10 @@ runApi:
 	$(GORUN) main.go web
 serve: install runApi
 
+runMail:
+	$(GORUN) main.go mail
+mail: install runMail
+
 build: 
 	$(GOBUILD) -o $(BINARY_NAME) -v
 

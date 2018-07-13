@@ -298,9 +298,47 @@ func DeleteCommit(id int) int64 {
 }
 
 // GetDailyCommitsForEmailing : Liste des commits à envoyer quotidiennement par email
-func GetDailyCommitsForEmailing(date time.Time) ([]CommitJSON, error) {
-	var commits []CommitJSON
-	var err error
+// Le paramètre date sera au format YYYY-MM-DD (Ex. : 2018-07-13)
+func GetDailyCommitsForEmailing(date string) ([]CommitJSON, error) {
+	query := `
+		SELECT project, version, author, subject, description, developers, testers, created_at
+		FROM commit
+		WHERE created_at LIKE ?`
+	rows, err := database.Select(query, date+"%")
+
+	var commits = make([]CommitJSON, 0)
+	var project, subject string
+	var version, author, description, developers, testers sql.NullString
+	var createdAt sql.RawBytes
+
+	for rows.Next() {
+		err = rows.Scan(
+			&project,
+			&version,
+			&author,
+			&subject,
+			&description,
+			&developers,
+			&testers,
+			&createdAt)
+
+		datetime, _ := time.Parse(time.RFC3339, string(createdAt))
+
+		commits = append(commits, CommitJSON{
+			0,
+			project,
+			version.String,
+			author.String,
+			subject,
+			description.String,
+			developers.String,
+			testers.String,
+			datetime.Format("2006-01-02 15:04:05")})
+
+		if err != nil {
+			panic(err.Error())
+		}
+	}
 
 	return commits, err
 }

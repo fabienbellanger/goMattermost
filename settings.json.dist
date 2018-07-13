@@ -19,8 +19,9 @@
         "hookPayload": ""
     },
     "smtp": {
+        "host": "",
+        "port": "",
         "username": "",
-        "password": "",
-        "host": ""
+        "password": ""
     }
 }

@@ -151,6 +151,7 @@ func TestIsDatebaseConfigCorrect(t *testing.T) {
 
 // TestIsSMTPServerConfigValid : Test si la configuration de la base de données est correcte
 func TestIsSMTPServerConfigValid(t *testing.T) {
+	SMTPPort = ""
 	SMTPUsername = ""
 	SMTPPassword = ""
 	SMTPHost = ""
