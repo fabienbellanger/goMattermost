@@ -4,7 +4,7 @@ package model
 type HTTPResponse struct {
 	Code    int         `json:"code" xml:"code"`
 	Message string      `json:"message" xml:"message"`
-	Data    interface{} `json:"data" xml:"data"`
+	Data    interface{} `json:"data,omitempty" xml:"data"`
 }
 
 // GetHTTPResponse : Retourne le type HTTPResponse
