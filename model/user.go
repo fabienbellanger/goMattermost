@@ -1,7 +1,9 @@
 package model
 
 import (
+	"crypto/sha512"
 	"database/sql"
+	"encoding/hex"
 
 	"github.com/fabienbellanger/goMattermost/database"
 )
@@ -19,11 +21,13 @@ type UserDB struct {
 
 // CheckLogin : Authentification
 func CheckLogin(username, password string) (UserDB, error) {
+	encryptPassword := sha512.Sum512([]byte(password))
+	encryptPasswordStr := hex.EncodeToString(encryptPassword[:])
 	query := `
 		SELECT id, username, lastname, firstname, created_at, deleted_at
 		FROM user
 		WHERE username = ? AND password = ? AND deleted_at IS NULL`
-	rows, err := database.Select(query, username, password)
+	rows, err := database.Select(query, username, encryptPasswordStr)
 
 	var user UserDB
 
