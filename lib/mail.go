@@ -21,6 +21,19 @@ type Mail struct {
 	Body    string
 }
 
+// formattedCommit type for email
+type formattedCommit struct {
+	project    string
+	version    string
+	time       string
+	developers []string
+	testers    []string
+	issues     []struct {
+		action      string
+		description string
+	}
+}
+
 // serverName : Nom du serveur
 func serverName() (s string) {
 	if len(config.SMTPPort) > 0 {
@@ -64,8 +77,25 @@ func SendCommitsByMail() {
 
 	fmt.Println(commits)
 
+	// Traitements des commits
+	// -----------------------
+	formattedCommits := formatCommits(commits)
+
 	// Envoi du mail
 	// -------------
+	sendMail()
+}
+
+func formatCommits(commits model.CommitJSON) []formattedCommit {
+	formattedCommits := make([]formattedCommit, 0)
+
+	// TODO !!!
+
+	return formattedCommits
+}
+
+// sendMail : Envoi du mail
+func sendMail() {
 	mail := Mail{}
 	mail.From = "toto@hjdhs.fr"
 	mail.To = []string{"def@yahoo.com", "xyz@outlook.com"}
@@ -77,6 +107,6 @@ func SendCommitsByMail() {
 	messageBody := mail.buildMessage()
 
 	auth := smtp.PlainAuth("", config.SMTPUsername, config.SMTPPassword, config.SMTPHost)
-	err = smtp.SendMail(serverName(), auth, mail.From, mail.To, []byte(messageBody))
+	err := smtp.SendMail(serverName(), auth, mail.From, mail.To, []byte(messageBody))
 	toolbox.CheckError(err, 1)
 }
