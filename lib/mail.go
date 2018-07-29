@@ -3,8 +3,8 @@ package lib
 import (
 	"fmt"
 	"net/smtp"
+	"regexp"
 	"strings"
-	"time"
 
 	"github.com/fabienbellanger/goMattermost/config"
 	"github.com/fabienbellanger/goMattermost/model"
@@ -21,6 +21,12 @@ type Mail struct {
 	Body    string
 }
 
+// issue type
+type issue struct {
+	action      string
+	description string
+}
+
 // formattedCommit type for email
 type formattedCommit struct {
 	project    string
@@ -28,10 +34,7 @@ type formattedCommit struct {
 	time       string
 	developers []string
 	testers    []string
-	issues     []struct {
-		action      string
-		description string
-	}
+	issues     []issue
 }
 
 // serverName : Nom du serveur
@@ -67,29 +70,52 @@ func (mail *Mail) buildMessage() (header string) {
 	return
 }
 
-// SendCommitsByMail : Envoi les commits de la veille par email
+// SendCommitsByMail : Envoi les commits du dernier jour par email
 func SendCommitsByMail() {
-	// Récupération des commits de la veille
-	// -------------------------------------
-	yesterday := time.Now().AddDate(0, 0, -1).Format("2006-01-02")
-	commits, err := model.GetDailyCommitsForEmailing(yesterday)
-	toolbox.CheckError(err, 1)
-
+	// Récupération des commits du dernier jour
+	// ----------------------------------------
+	commits := model.GetDailyCommitsForEmailing()
 	fmt.Println(commits)
 
 	// Traitements des commits
 	// -----------------------
 	formattedCommits := formatCommits(commits)
+	fmt.Println(formattedCommits)
 
 	// Envoi du mail
 	// -------------
-	sendMail()
+	// sendMail()
 }
 
-func formatCommits(commits model.CommitJSON) []formattedCommit {
+// formatCommits : Formattage des commits
+func formatCommits(commits []model.CommitJSON) []formattedCommit {
 	formattedCommits := make([]formattedCommit, 0)
+	regexDescription := regexp.MustCompile(`- (?:\[(fix|add|improvement)\] )?(.*)`)
+	developersTestersDelimiter := " & "
 
-	// TODO !!!
+	var formattedCommit formattedCommit
+	var issue issue
+
+	for _, commit := range commits {
+		formattedCommit.project = commit.Project
+		formattedCommit.version = commit.Version
+		formattedCommit.time = commit.CreatedAt[11:16]
+		formattedCommit.developers = strings.Split(commit.Developers, developersTestersDelimiter)
+		formattedCommit.testers = strings.Split(commit.Testers, developersTestersDelimiter)
+
+		// Description
+		matches := regexDescription.FindAllSubmatch([]byte(commits[0].Description), -1)
+		for _, match := range matches {
+			if len(match) == 3 {
+				issue.action = string(match[1])
+				issue.description = string(match[2])
+
+				formattedCommit.issues = append(formattedCommit.issues, issue)
+			}
+		}
+
+		formattedCommits = append(formattedCommits, formattedCommit)
+	}
 
 	return formattedCommits
 }
