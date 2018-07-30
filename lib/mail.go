@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/smtp"
 	"regexp"
+	"sort"
 	"strings"
 
 	"github.com/fabienbellanger/goMattermost/config"
@@ -82,6 +83,10 @@ func SendCommitsByMail() {
 	formattedCommits := formatCommits(commits)
 	fmt.Println(formattedCommits)
 
+	// Affiche les commits groupés par projet
+	// --------------------------------------
+	printCommits(formattedCommits)
+
 	// Envoi du mail
 	// -------------
 	// sendMail()
@@ -90,7 +95,7 @@ func SendCommitsByMail() {
 // formatCommits : Formattage des commits
 func formatCommits(commits []model.CommitJSON) []formattedCommit {
 	formattedCommits := make([]formattedCommit, 0)
-	regexDescription := regexp.MustCompile(`- (?:\[(fix|add|improvement)\] )?(.*)`)
+	regexDescription := regexp.MustCompile(`- (?:\[(fix|add|improvement|other)\] )?(.*)`)
 	developersTestersDelimiter := " & "
 
 	var formattedCommit formattedCommit
@@ -104,7 +109,7 @@ func formatCommits(commits []model.CommitJSON) []formattedCommit {
 		formattedCommit.testers = strings.Split(commit.Testers, developersTestersDelimiter)
 
 		// Description
-		matches := regexDescription.FindAllSubmatch([]byte(commits[0].Description), -1)
+		matches := regexDescription.FindAllSubmatch([]byte(commit.Description), -1)
 		for _, match := range matches {
 			if len(match) == 3 {
 				issue.action = string(match[1])
@@ -117,7 +122,39 @@ func formatCommits(commits []model.CommitJSON) []formattedCommit {
 		formattedCommits = append(formattedCommits, formattedCommit)
 	}
 
+	// Tri du tableau par projet puis par version
+	// ------------------------------------------
+	sort.Slice(formattedCommits, func(i, j int) bool {
+		if formattedCommits[i].project < formattedCommits[j].project {
+			return true
+		} else if formattedCommits[i].project > formattedCommits[j].project {
+			return false
+		} else {
+			return formattedCommits[i].version < formattedCommits[j].version
+		}
+	})
+
 	return formattedCommits
+}
+
+// printCommits : Affichage des commits
+func printCommits(commits []formattedCommit) {
+	var project string
+
+	str := ""
+
+	for _, commit := range commits {
+		if commit.project != project {
+			project = commit.project
+
+			str += "\n\n" + project
+			str += "\n----------"
+		}
+
+		str += "\n\t- [" + commit.version + "] [" + commit.time + "] "
+	}
+
+	fmt.Println(str)
 }
 
 // sendMail : Envoi du mail
