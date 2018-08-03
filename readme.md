@@ -10,13 +10,13 @@
 - Exécuter le fichier `.sql` dans `database` pour initialiser la base de données (facultatif)
 
 ## Utilisation
-- Envoi de commande à Mattermost avec une base de données
+- Envoi de commande à Mattermost et/ou Slack avec une base de données
     ```
-    make mattermost
+    make notification
     ```
-- Envoi de commande à Mattermost sans base de données
+- Envoi de commande à Mattermost et/ou Slack sans base de données
     ```
-    make mattermostNoDB
+    make notificationNoDB
     ```
 - Exécuter les tests
     ```
@@ -25,6 +25,14 @@
 - Compiler et générer un binaire
     ```
     make build
+    ```
+- Lancement du serveur Web
+    ```
+    make serve
+    ```
+- Envoi du mail quotidien
+    ```
+    make mail
     ```
 
 ## TODO
