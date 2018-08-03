@@ -10,6 +10,7 @@ import (
 	"github.com/fabienbellanger/goMattermost/config"
 	"github.com/fabienbellanger/goMattermost/model"
 	"github.com/fabienbellanger/goMattermost/toolbox"
+	"github.com/fatih/color"
 )
 
 // Mail type
@@ -76,20 +77,18 @@ func SendCommitsByMail() {
 	// Récupération des commits du dernier jour
 	// ----------------------------------------
 	commits := model.GetDailyCommitsForEmailing()
-	fmt.Println(commits)
 
 	// Traitements des commits
 	// -----------------------
 	formattedCommits := formatCommits(commits)
-	fmt.Println(formattedCommits)
 
 	// Affiche les commits groupés par projet
 	// --------------------------------------
-	printCommits(formattedCommits)
+	mailbody := printCommits(formattedCommits)
 
 	// Envoi du mail
 	// -------------
-	// sendMail()
+	sendMail(mailbody)
 }
 
 // formatCommits : Formattage des commits
@@ -138,38 +137,44 @@ func formatCommits(commits []model.CommitJSON) []formattedCommit {
 }
 
 // printCommits : Affichage des commits
-func printCommits(commits []formattedCommit) {
+func printCommits(commits []formattedCommit) string {
 	var project string
 
 	str := ""
-
-	for _, commit := range commits {
+	for index, commit := range commits {
 		if commit.project != project {
 			project = commit.project
 
-			str += "\n\n" + project
-			str += "\n----------"
+			if index > 0 {
+				str += "</ul>"
+			}
+			str += "<p style=\"font-weight: bold\">" + toolbox.Ucfirst(project) + "</p>"
+			str += "<ul>"
 		}
 
-		str += "\n\t- [" + commit.version + "] [" + commit.time + "] "
+		str += "<li> [" + commit.version + "] [" + commit.time + "]</li>"
 	}
+	str += "<ul>"
 
-	fmt.Println(str)
+	return str
 }
 
 // sendMail : Envoi du mail
-func sendMail() {
+func sendMail(body string) {
 	mail := Mail{}
 	mail.From = "toto@hjdhs.fr"
 	mail.To = []string{"def@yahoo.com", "xyz@outlook.com"}
 	mail.Cc = []string{"mnp@gmail.com"}
 	mail.Bcc = []string{"a69@outlook.com"}
 	mail.Subject = "Test envoi mails go"
-	mail.Body = "This is the <b>email</b> body."
+	mail.Body = body
 
 	messageBody := mail.buildMessage()
 
 	auth := smtp.PlainAuth("", config.SMTPUsername, config.SMTPPassword, config.SMTPHost)
 	err := smtp.SendMail(serverName(), auth, mail.From, mail.To, []byte(messageBody))
 	toolbox.CheckError(err, 1)
+
+	fmt.Print(" -> Mail send: \t")
+	color.Green("Success\n\n")
 }
