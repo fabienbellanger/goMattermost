@@ -85,7 +85,6 @@ func SendCommitsByMail() {
 	// Affiche les commits groupés par projet
 	// --------------------------------------
 	mailbody := printCommits(formattedCommits)
-	fmt.Println(mailbody)
 
 	// Envoi du mail
 	// -------------
@@ -133,6 +132,9 @@ func formatCommits(commits []model.CommitJSON) []formattedCommit {
 			return formattedCommits[i].version < formattedCommits[j].version
 		}
 	})
+
+	// Construction du tableau final
+	// -----------------------------
 
 	return formattedCommits
 }
