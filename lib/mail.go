@@ -85,6 +85,7 @@ func SendCommitsByMail() {
 	// Affiche les commits groupés par projet
 	// --------------------------------------
 	mailbody := printCommits(formattedCommits)
+	fmt.Println(mailbody)
 
 	// Envoi du mail
 	// -------------
@@ -139,6 +140,8 @@ func formatCommits(commits []model.CommitJSON) []formattedCommit {
 // printCommits : Affichage des commits
 func printCommits(commits []formattedCommit) string {
 	var project string
+	var color string
+	var message string
 
 	str := ""
 	for index, commit := range commits {
@@ -152,7 +155,37 @@ func printCommits(commits []formattedCommit) string {
 			str += "<ul>"
 		}
 
-		str += "<li> [" + commit.version + "] [" + commit.time + "]</li>"
+		str += "<li>"
+		str += "[" + commit.version + "] [" + commit.time + "] "
+
+		// Message
+		message = ""
+		for _, issue := range commit.issues {
+			if issue.description != "" {
+				if issue.action == "fix" {
+					color = "red"
+				} else if issue.action == "improvement" {
+					color = "orange"
+				} else if issue.action == "add" {
+					color = "green"
+				} else {
+					color = "black"
+				}
+
+				message += "<li style=\"color: " + color + "\">"
+				if issue.action != "" {
+					message += "[" + issue.action + "] "
+				}
+				message += issue.description
+				message += "</li>"
+			}
+		}
+
+		if message != "" {
+			str += "<ul>" + message + "</ul>"
+		}
+
+		str += "</li>"
 	}
 	str += "<ul>"
 

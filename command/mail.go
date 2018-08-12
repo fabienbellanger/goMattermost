@@ -24,11 +24,11 @@ var MailCommand = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		color.Yellow(`
 
-|------------------------------------------|
-|                                          |
-| Send mail with commits list of yesterday |
-|                                          |
-|------------------------------------------|
+|----------------------------------------|
+|                                        |
+| Send mail with commits list of the day |
+|                                        |
+|----------------------------------------|
 
 		`)
 
