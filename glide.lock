@@ -1,0 +1,48 @@
+hash: e086a24ac16be12c4eb407513df73ff22fa1ee71510a3298862acd2845f5ac74
+updated: 2018-08-14T23:18:56.743611+02:00
+imports:
+- name: github.com/dgrijalva/jwt-go
+  version: 06ea1031745cb8b3dab3f6a236daf2b0aa468b7e
+- name: github.com/fatih/color
+  version: 5b77d2a35fb0ede96d138fc9a99f5c9b6aef11b4
+- name: github.com/go-sql-driver/mysql
+  version: d523deb1b23d913de5bdada721a6071e71283618
+- name: github.com/inconshreveable/mousetrap
+  version: 76626ae9c91c4f2a10f34cad8ce83ea42c93bb75
+- name: github.com/labstack/echo
+  version: 6d227dfea4d2e52cb76856120b3c17f758139b4e
+  subpackages:
+  - middleware
+- name: github.com/labstack/gommon
+  version: 2a618302b929cc20862dda3aa6f02f64dbe740dd
+  subpackages:
+  - bytes
+  - color
+  - log
+  - random
+- name: github.com/mattn/go-colorable
+  version: efa589957cd060542a26d2dd7832fd6a6c6c3ade
+- name: github.com/mattn/go-isatty
+  version: 6ca4dbf54d38eea1a992b3c722a76a5d1c4cb25c
+- name: github.com/spf13/cobra
+  version: ef82de70bb3f60c65fb8eebacbb2d122ef517385
+- name: github.com/spf13/pflag
+  version: 9a97c102cda95a86cec2345a6f09f55a939babf5
+- name: github.com/valyala/bytebufferpool
+  version: e746df99fe4a3986f4d4f79e13c1e0117ce9c2f7
+- name: github.com/valyala/fasttemplate
+  version: dcecefd839c4193db0d35b88ec65b4c12d360ab0
+- name: golang.org/x/crypto
+  version: de0752318171da717af4ce24d0a2e8626afaeb11
+  subpackages:
+  - acme
+  - acme/autocert
+- name: golang.org/x/sys
+  version: 4e1fef5609515ec7a2cee7b5de30ba6d9b438cbf
+  subpackages:
+  - unix
+- name: google.golang.org/appengine
+  version: 4216e58b9158e5f1c906f1aca75162a46a2ec88a
+  subpackages:
+  - cloudsql
+testImports: []

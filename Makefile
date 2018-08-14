@@ -50,3 +50,4 @@ deps:
 	$(GOGET) -u github.com/labstack/echo/...
 	$(GOGET) -u github.com/go-sql-driver/mysql
 	$(GOGET) -u github.com/fatih/color
+	$(GOGET) -u github.com/dgrijalva/jwt-go
