@@ -1,7 +1,9 @@
 package lib
 
 import (
+	"bytes"
 	"fmt"
+	"html/template"
 	"net/smtp"
 	"regexp"
 	"sort"
@@ -37,6 +39,10 @@ type formattedCommit struct {
 	developers []string
 	testers    []string
 	issues     []issue
+}
+
+type mailTemplate struct {
+	Title string
 }
 
 // serverName : Nom du serveur
@@ -85,6 +91,8 @@ func SendCommitsByMail() {
 	// Affiche les commits groupés par projet
 	// --------------------------------------
 	mailbody := printCommits(formattedCommits)
+
+	constructTemplate()
 
 	// Envoi du mail
 	// -------------
@@ -192,6 +200,28 @@ func printCommits(commits []formattedCommit) string {
 	str += "<ul>"
 
 	return str
+}
+
+func constructTemplate() {
+	// Création d'une page
+	m := mailTemplate{Title: "Titre de ma page"}
+
+	// Création d'une nouvelle instance de template
+	t := template.New("Mail")
+
+	// Déclaration des fichiers à parser
+	t = template.Must(t.ParseFiles("./templates/mail.html"))
+
+	// Exécution de la fusion et injection dans le flux de sortie
+	// La variable p sera réprésentée par le "." dans le layout
+	// Exemple {{.}} == p
+	buffer := new(bytes.Buffer)
+	err := t.ExecuteTemplate(buffer, "layout", m)
+
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(buffer.String())
 }
 
 // sendMail : Envoi du mail
