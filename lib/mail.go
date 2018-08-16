@@ -25,26 +25,41 @@ type Mail struct {
 	Body    string
 }
 
-// issue type
-type issue struct {
-	action      string
-	description string
+// Issue type
+type Issue struct {
+	Action      string
+	Description string
 }
 
 // formattedCommit type for email
 type formattedCommit struct {
-	project    string
-	version    string
-	time       string
-	developers []string
-	testers    []string
-	issues     []issue
+	Project    string
+	Version    string
+	Time       string
+	Developers []string
+	Testers    []string
+	Issues     []Issue
+}
+
+// Project type
+type Project struct {
+	Name     string
+	Releases []Release
+}
+
+// Release type
+type Release struct {
+	Version    string
+	Time       string
+	Developers []string
+	Testers    []string
+	Issues     []Issue
 }
 
 // mailTemplate type pour la template HTML
 type mailTemplate struct {
 	Title   string
-	Commits []string
+	Commits []formattedCommit
 }
 
 // serverName : Nom du serveur
@@ -88,17 +103,39 @@ func SendCommitsByMail() {
 
 	// Traitements des commits
 	// -----------------------
-	formattedCommits := formatCommits(commits)
+	// formattedCommits := formatCommits(commits)
+	// fmt.Println(formattedCommits)
+
+	// Construction des données pour envoi à la template
+	// -------------------------------------------------
+	projects := constructData(commits)
+	fmt.Println(projects)
 
 	// Affiche les commits groupés par projet
 	// --------------------------------------
-	mailbody := printCommits(formattedCommits)
-
-	constructTemplate()
+	// mailbody := constructTemplate(formattedCommits)
+	// fmt.Println(mailbody)
 
 	// Envoi du mail
 	// -------------
-	sendMail(mailbody)
+	// sendMail(mailbody)
+}
+
+// constructData : Construction des données pour envoi à la template
+func constructData(commits []model.CommitJSON) []Project {
+	projects := make([]Project, 0)
+	// regexDescription := regexp.MustCompile(`- (?:\[(fix|add|improvement|other)\] )?(.*)`)
+	// developersTestersDelimiter := " & "
+
+	// var project Project
+	// var release Release
+	// var issue Issue
+
+	for _, commit := range commits {
+		fmt.Println(commit)
+	}
+
+	return projects
 }
 
 // formatCommits : Formattage des commits
@@ -108,23 +145,23 @@ func formatCommits(commits []model.CommitJSON) []formattedCommit {
 	developersTestersDelimiter := " & "
 
 	var formattedCommit formattedCommit
-	var issue issue
+	var issue Issue
 
 	for _, commit := range commits {
-		formattedCommit.project = commit.Project
-		formattedCommit.version = commit.Version
-		formattedCommit.time = commit.CreatedAt[11:16]
-		formattedCommit.developers = strings.Split(commit.Developers, developersTestersDelimiter)
-		formattedCommit.testers = strings.Split(commit.Testers, developersTestersDelimiter)
+		formattedCommit.Project = commit.Project
+		formattedCommit.Version = commit.Version
+		formattedCommit.Time = commit.CreatedAt[11:16]
+		formattedCommit.Developers = strings.Split(commit.Developers, developersTestersDelimiter)
+		formattedCommit.Testers = strings.Split(commit.Testers, developersTestersDelimiter)
 
 		// Description
 		matches := regexDescription.FindAllSubmatch([]byte(commit.Description), -1)
 		for _, match := range matches {
 			if len(match) == 3 {
-				issue.action = string(match[1])
-				issue.description = string(match[2])
+				issue.Action = string(match[1])
+				issue.Description = string(match[2])
 
-				formattedCommit.issues = append(formattedCommit.issues, issue)
+				formattedCommit.Issues = append(formattedCommit.Issues, issue)
 			}
 		}
 
@@ -134,12 +171,12 @@ func formatCommits(commits []model.CommitJSON) []formattedCommit {
 	// Tri du tableau par projet puis par version
 	// ------------------------------------------
 	sort.Slice(formattedCommits, func(i, j int) bool {
-		if formattedCommits[i].project < formattedCommits[j].project {
+		if formattedCommits[i].Project < formattedCommits[j].Project {
 			return true
-		} else if formattedCommits[i].project > formattedCommits[j].project {
+		} else if formattedCommits[i].Project > formattedCommits[j].Project {
 			return false
 		} else {
-			return formattedCommits[i].version < formattedCommits[j].version
+			return formattedCommits[i].Version < formattedCommits[j].Version
 		}
 	})
 
@@ -149,80 +186,23 @@ func formatCommits(commits []model.CommitJSON) []formattedCommit {
 	return formattedCommits
 }
 
-// printCommits : Affichage des commits
-func printCommits(commits []formattedCommit) string {
-	var project string
-	var color string
-	var message string
-
-	str := ""
-	for index, commit := range commits {
-		if commit.project != project {
-			project = commit.project
-
-			if index > 0 {
-				str += "</ul>"
-			}
-			str += "<p style=\"font-weight: bold\">" + toolbox.Ucfirst(project) + "</p>"
-			str += "<ul>"
-		}
-
-		str += "<li>"
-		str += "[" + commit.version + "] [" + commit.time + "] "
-
-		// Message
-		message = ""
-		for _, issue := range commit.issues {
-			if issue.description != "" {
-				if issue.action == "fix" {
-					color = "red"
-				} else if issue.action == "improvement" {
-					color = "orange"
-				} else if issue.action == "add" {
-					color = "green"
-				} else {
-					color = "black"
-				}
-
-				message += "<li style=\"color: " + color + "\">"
-				if issue.action != "" {
-					message += "[" + issue.action + "] "
-				}
-				message += issue.description
-				message += "</li>"
-			}
-		}
-
-		if message != "" {
-			str += "<ul>" + message + "</ul>"
-		}
-
-		str += "</li>"
-	}
-	str += "<ul>"
-
-	return str
-}
-
 // constructTemplate : Construction de la template pour l'envoi du mail
 // TODO: https://github.com/mlabouardy/go-html-email
-func constructTemplate() {
-	// Création d'une page
-	c := []string{"coucou", "Toto"}
-	m := mailTemplate{Title: "Titre de ma page", Commits: c}
+func constructTemplate(commits []formattedCommit) string {
+	templateData := mailTemplate{Title: "Titre de ma page", Commits: commits}
 
 	t := template.New("mail")
 	t = template.Must(t.ParseFiles("./templates/mail.html"))
 
 	buffer := new(bytes.Buffer)
 	// err := t.ExecuteTemplate(buffer, "mail", m)
-	err := t.Execute(buffer, m)
+	err := t.Execute(buffer, templateData)
 
 	if err != nil {
 		fmt.Println(err)
 	}
 
-	fmt.Println(buffer.String())
+	return buffer.String()
 }
 
 // sendMail : Envoi du mail
