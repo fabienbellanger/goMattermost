@@ -41,8 +41,10 @@ type formattedCommit struct {
 	issues     []issue
 }
 
+// mailTemplate type pour la template HTML
 type mailTemplate struct {
-	Title string
+	Title   string
+	Commits []string
 }
 
 // serverName : Nom du serveur
@@ -206,11 +208,15 @@ func printCommits(commits []formattedCommit) string {
 // TODO: https://github.com/mlabouardy/go-html-email
 func constructTemplate() {
 	// Création d'une page
-	m := mailTemplate{Title: "Titre de ma page"}
-	t := template.New("Mail")
+	c := []string{"coucou", "Toto"}
+	m := mailTemplate{Title: "Titre de ma page", Commits: c}
+
+	t := template.New("mail")
 	t = template.Must(t.ParseFiles("./templates/mail.html"))
+
 	buffer := new(bytes.Buffer)
-	err := t.ExecuteTemplate(buffer, "layout", m)
+	// err := t.ExecuteTemplate(buffer, "mail", m)
+	err := t.Execute(buffer, m)
 
 	if err != nil {
 		fmt.Println(err)

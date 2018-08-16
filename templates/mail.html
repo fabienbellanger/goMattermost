@@ -1,11 +1,17 @@
-{{define "layout"}}<!DOCTYPE html>
+{{- define "mail" }}
+<!DOCTYPE html>
 <html lang="fr">
     <head>
         <meta charset="utf-8">
-        <title>{{.Title}}</title>
+        <title>{{ .Title }}</title>
     </head>
+
     <body>
-        
+        {{- if gt (len .Commits) 0 }}
+            {{- range $index, $element := .Commits }}
+        <p>{{ $index }} : {{ $element }}</p>
+            {{- end }}
+        {{- end }}
     </body>
 </html>
-{{end}}
+{{- end }}
