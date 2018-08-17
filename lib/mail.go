@@ -25,22 +25,6 @@ type Mail struct {
 	Body    string
 }
 
-// Issue type
-type Issue struct {
-	Action      string
-	Description string
-}
-
-// formattedCommit type for email
-type formattedCommit struct {
-	Project    string
-	Version    string
-	Time       string
-	Developers []string
-	Testers    []string
-	Issues     []Issue
-}
-
 // Project type
 type Project struct {
 	Name     string
@@ -56,10 +40,16 @@ type Release struct {
 	Issues     []Issue
 }
 
+// Issue type
+type Issue struct {
+	Action      string
+	Description string
+}
+
 // mailTemplate type pour la template HTML
 type mailTemplate struct {
-	Title   string
-	Commits []formattedCommit
+	Title    string
+	Projects []Project
 }
 
 // serverName : Nom du serveur
@@ -101,11 +91,6 @@ func SendCommitsByMail() {
 	// ----------------------------------------
 	commits := model.GetDailyCommitsForEmailing()
 
-	// Traitements des commits
-	// -----------------------
-	// formattedCommits := formatCommits(commits)
-	// fmt.Println(formattedCommits)
-
 	// Construction des données pour envoi à la template
 	// -------------------------------------------------
 	projects := constructData(commits)
@@ -113,8 +98,8 @@ func SendCommitsByMail() {
 
 	// Affiche les commits groupés par projet
 	// --------------------------------------
-	// mailbody := constructTemplate(formattedCommits)
-	// fmt.Println(mailbody)
+	mailbody := constructTemplate(projects)
+	fmt.Println(mailbody)
 
 	// Envoi du mail
 	// -------------
@@ -170,7 +155,7 @@ func constructData(commits []model.CommitJSON) []Project {
 
 			projects[indexProject].Releases = append(projects[indexProject].Releases, Release{
 				commit.Version,
-				"Time",
+				commit.CreatedAt[11:16],
 				strings.Split(commit.Developers, developersTestersDelimiter),
 				strings.Split(commit.Testers, developersTestersDelimiter),
 				make([]Issue, 0),
@@ -218,58 +203,10 @@ func constructData(commits []model.CommitJSON) []Project {
 	return projects
 }
 
-// formatCommits : Formattage des commits
-func formatCommits(commits []model.CommitJSON) []formattedCommit {
-	formattedCommits := make([]formattedCommit, 0)
-	regexDescription := regexp.MustCompile(`- (?:\[(fix|add|improvement|other)\] )?(.*)`)
-	developersTestersDelimiter := " & "
-
-	var formattedCommit formattedCommit
-	var issue Issue
-
-	for _, commit := range commits {
-		formattedCommit.Project = commit.Project
-		formattedCommit.Version = commit.Version
-		formattedCommit.Time = commit.CreatedAt[11:16]
-		formattedCommit.Developers = strings.Split(commit.Developers, developersTestersDelimiter)
-		formattedCommit.Testers = strings.Split(commit.Testers, developersTestersDelimiter)
-
-		// Description
-		matches := regexDescription.FindAllSubmatch([]byte(commit.Description), -1)
-		for _, match := range matches {
-			if len(match) == 3 {
-				issue.Action = string(match[1])
-				issue.Description = string(match[2])
-
-				formattedCommit.Issues = append(formattedCommit.Issues, issue)
-			}
-		}
-
-		formattedCommits = append(formattedCommits, formattedCommit)
-	}
-
-	// Tri du tableau par projet puis par version
-	// ------------------------------------------
-	sort.Slice(formattedCommits, func(i, j int) bool {
-		if formattedCommits[i].Project < formattedCommits[j].Project {
-			return true
-		} else if formattedCommits[i].Project > formattedCommits[j].Project {
-			return false
-		} else {
-			return formattedCommits[i].Version < formattedCommits[j].Version
-		}
-	})
-
-	// Construction du tableau final
-	// -----------------------------
-
-	return formattedCommits
-}
-
 // constructTemplate : Construction de la template pour l'envoi du mail
 // TODO: https://github.com/mlabouardy/go-html-email
-func constructTemplate(commits []formattedCommit) string {
-	templateData := mailTemplate{Title: "Titre de ma page", Commits: commits}
+func constructTemplate(projects []Project) string {
+	templateData := mailTemplate{Title: "Titre de ma page", Projects: projects}
 
 	t := template.New("mail")
 	t = template.Must(t.ParseFiles("./templates/mail.html"))
