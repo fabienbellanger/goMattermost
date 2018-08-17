@@ -193,17 +193,27 @@ func constructData(commits []model.CommitJSON) []Project {
 		}
 	}
 
-	// Tri du tableau par projet puis par release
-	// ------------------------------------------
+	// Tri du tableau par projet
+	// -------------------------
 	sort.Slice(projects, func(i, j int) bool {
-		if projects[i].Name < projects[j].Name {
+		if projects[i].Name <= projects[j].Name {
 			return true
-		} else if projects[i].Name > projects[j].Name {
-			return false
 		} else {
-			// Tri par release
+			return false
 		}
 	})
+
+	// Tri par release pour chaque projet
+	// ----------------------------------
+	for index := range projects {
+		sort.Slice(projects[index].Releases, func(i, j int) bool {
+			if projects[index].Releases[i].Version <= projects[index].Releases[j].Version {
+				return true
+			} else {
+				return false
+			}
+		})
+	}
 
 	return projects
 }
