@@ -19,11 +19,11 @@
             </p>
             {{- if gt (len $project.Releases) 0 }}
                 <ul>
-                    {{- range $release := $project.Releases }}
-                        <li>
-                            {{ $release }}
-                        </li>
-                    {{- end }}
+                {{- range $release := $project.Releases }}
+                    <li>
+                        {{ $release }}
+                    </li>
+                {{- end }}
                 </ul>
             {{- end }}
         {{- end }}
