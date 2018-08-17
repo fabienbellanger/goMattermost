@@ -124,16 +124,86 @@ func SendCommitsByMail() {
 // constructData : Construction des données pour envoi à la template
 func constructData(commits []model.CommitJSON) []Project {
 	projects := make([]Project, 0)
-	// regexDescription := regexp.MustCompile(`- (?:\[(fix|add|improvement|other)\] )?(.*)`)
-	// developersTestersDelimiter := " & "
+	regexDescription := regexp.MustCompile(`- (?:\[(fix|add|improvement|other)\] )?(.*)`)
+	developersTestersDelimiter := " & "
 
-	// var project Project
-	// var release Release
-	// var issue Issue
+	indexProject := -1
+	indexRelease := -1
+	projectsNumber := 0
+	releasesNumber := 0
+	var i int
 
 	for _, commit := range commits {
-		fmt.Println(commit)
+		// 1. Regroupement par projet
+		// --------------------------
+		projectsNumber = len(projects)
+		i = 0
+
+		for i < projectsNumber && projects[i].Name != commit.Project {
+			i++
+		}
+
+		// Le projet est-il déjà présent dans le tableau ?
+		if i == projectsNumber {
+			// Projet non trouvé
+			indexProject++
+
+			projects = append(projects, Project{commit.Project, make([]Release, 0)})
+		} else {
+			indexProject = i
+		}
+
+		// 2. Regroupement par release
+		// ---------------------------
+		releasesNumber = len(projects[indexProject].Releases)
+		indexRelease = releasesNumber - 1
+		i = 0
+
+		for i < releasesNumber && projects[indexProject].Releases[i].Version != commit.Version {
+			i++
+		}
+
+		// La release est-elle déjà présente dans le tableau ?
+		if i == releasesNumber {
+			// Release non trouvée
+			indexRelease++
+
+			projects[indexProject].Releases = append(projects[indexProject].Releases, Release{
+				commit.Version,
+				"Time",
+				strings.Split(commit.Developers, developersTestersDelimiter),
+				strings.Split(commit.Testers, developersTestersDelimiter),
+				make([]Issue, 0),
+			})
+		} else {
+			indexRelease = i
+		}
+
+		// 3. Regroupement par issue
+		// -------------------------
+		// Traitement de la description
+		matches := regexDescription.FindAllSubmatch([]byte(commit.Description), -1)
+		for _, match := range matches {
+			if len(match) == 3 {
+				projects[indexProject].Releases[indexRelease].Issues = append(projects[indexProject].Releases[indexRelease].Issues, Issue{
+					string(match[1]),
+					string(match[2]),
+				})
+			}
+		}
 	}
+
+	// Tri du tableau par projet puis par release
+	// ------------------------------------------
+	sort.Slice(projects, func(i, j int) bool {
+		if projects[i].Name < projects[j].Name {
+			return true
+		} else if projects[i].Name > projects[j].Name {
+			return false
+		} else {
+			// Tri par release
+		}
+	})
 
 	return projects
 }
