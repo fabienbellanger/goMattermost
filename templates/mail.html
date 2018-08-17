@@ -3,31 +3,140 @@
 <html lang="fr">
     <head>
         <meta charset="utf-8">
-        <title>{{ .Title }}</title>
+        <meta name="viewport" content="width=device-width"/>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+        <title>Mises en production</title>
+
         <style>
+            body {
+                margin:           0 auto;
+                padding:          0;
+                min-width:        100%;
+                font-family:      sans-serif;
+                background-color: #2fd3ae;
+            }
+
+            table {
+                margin: 50px 0px;
+            }
+
+            table.container {
+                background-color: white;
+            }
+
+            .header {
+                height:         40px;
+                padding:        40px;
+                text-align:     center;
+                font-size:      24px;
+                font-weight:    bold;
+                color:        #32898a;
+            }
+
+            .content {
+                min-height:  100px;
+                font-size:   14px;
+                line-height: 20px;
+            }
+
+            .content td {
+                padding: 0px 40px;
+            }
+
+            .footer {
+                padding: 40px;
+            }
+
+            .projectName {
+                font-size:   16px;
+                font-weight: bold;
+                color:      #32898a;
+            }
+
             .bold {
                 font-weight: bold;
+            }
+
+            .green {
+                color: #2fd3ae;
+            }
+
+            .dark-green {
+                color: #32898a;
+            }
+
+            .issue-other {
+                color: black;
+            }
+
+            .issue-fix {
+                color: red;
+            }
+
+            .issue-add {
+                color: green;
+            }
+
+            .issue-improvement {
+                color: orange;
             }
         </style>
     </head>
 
     <body>
-    {{- if gt (len .Projects) 0 }}
-        {{- range $project := .Projects }}
-            <p class="bold">
-                {{ $project.Name }}
-            </p>
-            {{- if gt (len $project.Releases) 0 }}
-                <ul>
-                {{- range $release := $project.Releases }}
-                    <li>
-                        {{ $release }}
-                    </li>
+        <table class="container" width="100%" border="0" cellspacing="0" cellpadding="0">
+            <tr class="header">
+                <td>Mises production</td>
+            </tr>
+            <tr class="content">
+                <td>
+                {{- if gt (len .Projects) 0 }}
+                    {{- range $project := .Projects }}
+                        {{- if gt (len $project.Releases) 0 }}
+                            <p class="projectName">
+                                {{ $project.Name }}
+                            </p>
+                            <ul>
+                            {{- range $release := $project.Releases }}
+                                <li>
+                                    <div>
+                                        Version : <span class="bold">{{ $release.Version }}</span>
+                                    </div>
+                                    {{- if gt (len $release.Developers) 0 }}
+                                        <div>Développeurs : {{ $release.Developers }}</div>
+                                    {{- end }}
+                                    {{- if gt (len $release.Testers) 0 }}
+                                        <div>Testers : {{ $release.Testers }}</div>
+                                        {{- end }}
+                                    {{- if gt (len $release.Issues) 0 }}
+                                        <div>Issues :
+                                            <ul>
+                                            {{- range $issue := $release.Issues }}
+                                                <li>
+                                                    {{- if ne $issue.Action "" }}
+                                                        <span class="issue-{{ .Action }}">[{{ .Label }}]</span>
+                                                    {{- else }}
+                                                        <span class="issue-other">[Autre]</span>
+                                                    {{- end }}
+                                                    {{ $issue.Description }}
+                                                </li>
+                                            {{- end }}
+                                            </ul>
+                                        </div>
+                                    {{- end }}
+                                </li>
+                            {{- end }}
+                            </ul>
+                        {{- end }}
+                    {{- end }}
                 {{- end }}
-                </ul>
-            {{- end }}
-        {{- end }}
-    {{- end }}
+                </td>
+            </tr>
+            <tr class="footer">
+                <td></td>
+            </tr>
+        </table>
     </body>
 </html>
 {{- end }}

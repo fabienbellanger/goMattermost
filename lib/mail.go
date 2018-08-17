@@ -43,6 +43,7 @@ type Release struct {
 // Issue type
 type Issue struct {
 	Action      string
+	Label       string
 	Description string
 }
 
@@ -94,23 +95,21 @@ func SendCommitsByMail() {
 	// Construction des données pour envoi à la template
 	// -------------------------------------------------
 	projects := constructData(commits)
-	fmt.Println(projects)
+	// fmt.Println(projects)
 
 	// Affiche les commits groupés par projet
 	// --------------------------------------
 	mailbody := constructTemplate(projects)
-	fmt.Println(mailbody)
 
 	// Envoi du mail
 	// -------------
-	// sendMail(mailbody)
+	sendMail(mailbody)
 }
 
 // constructData : Construction des données pour envoi à la template
 func constructData(commits []model.CommitJSON) []Project {
 	projects := make([]Project, 0)
 	regexDescription := regexp.MustCompile(`- (?:\[(fix|add|improvement|other)\] )?(.*)`)
-	developersTestersDelimiter := " & "
 
 	indexProject := -1
 	indexRelease := -1
@@ -131,7 +130,7 @@ func constructData(commits []model.CommitJSON) []Project {
 		// Le projet est-il déjà présent dans le tableau ?
 		if i == projectsNumber {
 			// Projet non trouvé
-			indexProject++
+			indexProject = projectsNumber
 
 			projects = append(projects, Project{commit.Project, make([]Release, 0)})
 		} else {
@@ -141,7 +140,6 @@ func constructData(commits []model.CommitJSON) []Project {
 		// 2. Regroupement par release
 		// ---------------------------
 		releasesNumber = len(projects[indexProject].Releases)
-		indexRelease = releasesNumber - 1
 		i = 0
 
 		for i < releasesNumber && projects[indexProject].Releases[i].Version != commit.Version {
@@ -151,13 +149,13 @@ func constructData(commits []model.CommitJSON) []Project {
 		// La release est-elle déjà présente dans le tableau ?
 		if i == releasesNumber {
 			// Release non trouvée
-			indexRelease++
+			indexRelease = releasesNumber
 
 			projects[indexProject].Releases = append(projects[indexProject].Releases, Release{
 				commit.Version,
 				commit.CreatedAt[11:16],
-				strings.Split(commit.Developers, developersTestersDelimiter),
-				strings.Split(commit.Testers, developersTestersDelimiter),
+				getDevelopersTesters(commit.Developers),
+				getDevelopersTesters(commit.Testers),
 				make([]Issue, 0),
 			})
 		} else {
@@ -170,8 +168,10 @@ func constructData(commits []model.CommitJSON) []Project {
 		matches := regexDescription.FindAllSubmatch([]byte(commit.Description), -1)
 		for _, match := range matches {
 			if len(match) == 3 {
+
 				projects[indexProject].Releases[indexRelease].Issues = append(projects[indexProject].Releases[indexRelease].Issues, Issue{
 					string(match[1]),
+					getIssueLabel(string(match[1])),
 					string(match[2]),
 				})
 			}
@@ -183,24 +183,50 @@ func constructData(commits []model.CommitJSON) []Project {
 	sort.Slice(projects, func(i, j int) bool {
 		if projects[i].Name <= projects[j].Name {
 			return true
-		} else {
-			return false
 		}
+
+		return false
 	})
 
 	// Tri par release pour chaque projet
 	// ----------------------------------
 	for index := range projects {
+		projects[index].Name = toolbox.Ucfirst(projects[index].Name)
 		sort.Slice(projects[index].Releases, func(i, j int) bool {
 			if projects[index].Releases[i].Version <= projects[index].Releases[j].Version {
 				return true
-			} else {
-				return false
 			}
+
+			return false
 		})
 	}
 
 	return projects
+}
+
+// getIssueLabel : Retourne le label d'une issue
+func getIssueLabel(action string) string {
+	switch action {
+	case "fix":
+		return "Correction"
+	case "improvement":
+		return "Amélioration"
+	case "add":
+		return "Nouveauté"
+	default:
+		return "Autre"
+	}
+}
+
+// getDevelopersTesters
+func getDevelopersTesters(list string) []string {
+	delimiter := " & "
+
+	if list != "" {
+		return strings.Split(list, delimiter)
+	}
+
+	return nil
 }
 
 // constructTemplate : Construction de la template pour l'envoi du mail
@@ -212,7 +238,6 @@ func constructTemplate(projects []Project) string {
 	t = template.Must(t.ParseFiles("./templates/mail.html"))
 
 	buffer := new(bytes.Buffer)
-	// err := t.ExecuteTemplate(buffer, "mail", m)
 	err := t.Execute(buffer, templateData)
 
 	if err != nil {
