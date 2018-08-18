@@ -298,11 +298,16 @@ func DeleteCommit(id int) int64 {
 }
 
 // GetDailyCommitsForEmailing : Liste des commits à envoyer quotidiennement par email
-// Le paramètre date sera au format YYYY-MM-DD (Ex. : 2018-07-13)
 func GetDailyCommitsForEmailing() []CommitJSON {
+	/* dateNow := time.Now().Format("2006-01-02%")
+	query := `
+		SELECT project, version, author, subject, description, developers, testers, created_at
+		FROM commit
+		WHERE created_at LIKE ?`
+	rows, err := database.Select(query, dateNow)*/
 	query := `
 		SELECT
-			c1.project, c1.version, c1.author, c1.subject, c1.description, 
+			c1.project, c1.version, c1.author, c1.subject, c1.description,
 			c1.developers, c1.testers, c1.created_at
 		FROM commit c1
 			INNER JOIN (

@@ -1,3 +1,4 @@
+
 {{- define "mail" }}
 <!DOCTYPE html>
 <html lang="fr">
@@ -17,16 +18,41 @@
                 background-color: #2fd3ae;
             }
 
-            table {
-                margin: 50px 0px;
-            }
-
             table.container {
+                margin:           50px 0px;
                 background-color: white;
             }
 
+            table.projects {
+                border-collapse: collapse;
+                width:           100%;
+                text-align:      center;
+            }
+
+            table.projects td, table.projects th {
+                border:  1px solid grey;
+            }
+
+            table.projects th {
+                padding:          5px;
+                background-color: lightgray;
+            }
+
+            table.projects td {
+                padding: 5px 30px;
+            }
+
+            table.projects tr:nth-child(even) td {
+                background-color: #f6f6f6;
+            }
+
+            table.projects  ul {
+                padding-left: 0px;
+                margin:       4px 0px;
+            }
+
             .header {
-                height:         40px;
+                height:         60px;
                 padding:        40px;
                 text-align:     center;
                 font-size:      24px;
@@ -46,6 +72,7 @@
 
             .footer {
                 padding: 40px;
+                height:  40px;
             }
 
             .projectName {
@@ -87,7 +114,7 @@
     <body>
         <table class="container" width="100%" border="0" cellspacing="0" cellpadding="0">
             <tr class="header">
-                <td>Mises production</td>
+                <td>Mises production du {{ .Date }}</td>
             </tr>
             <tr class="content">
                 <td>
@@ -97,20 +124,41 @@
                             <p class="projectName">
                                 {{ $project.Name }}
                             </p>
-                            <ul>
-                            {{- range $release := $project.Releases }}
-                                <li>
-                                    <div>
-                                        Version : <span class="bold">{{ $release.Version }}</span>
-                                    </div>
-                                    {{- if gt (len $release.Developers) 0 }}
-                                        <div>Développeurs : {{ $release.Developers }}</div>
-                                    {{- end }}
-                                    {{- if gt (len $release.Testers) 0 }}
-                                        <div>Testers : {{ $release.Testers }}</div>
+                            <table class="projects" border="1px" cellpadding="2px" cellspacing="0px">
+                                <thead>
+                                    <tr>
+                                        <th align="left" valign="middle">Version</th>
+                                        <th align="left" valign="middle">Développeurs</th>
+                                        <th align="left" valign="middle">Testeurs</th>
+                                        <th align="left" valign="middle">Issues</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                {{- range $release := $project.Releases }}
+                                    <tr>
+                                        <td align="center" valign="middle">
+                                            <span class="bold">{{ $release.Version }}
+                                        </td>
+                                        <td align="left" valign="top">
+                                        {{- if gt (len $release.Developers) 0 }}
+                                            <ul>
+                                            {{- range $developer := $release.Developers }}
+                                                <li>{{ $developer }}</li>
+                                            {{- end }}
+                                            </ul>
                                         {{- end }}
-                                    {{- if gt (len $release.Issues) 0 }}
-                                        <div>Issues :
+                                        </td>
+                                        <td align="left" valign="top">
+                                        {{- if gt (len $release.Testers) 0 }}
+                                            <ul>
+                                            {{- range $tester := $release.Testers }}
+                                                <li>{{ $tester }}</li>
+                                            {{- end }}
+                                            </ul>
+                                        {{- end }}
+                                        </td>
+                                        <td align="left" valign="top">
+                                        {{- if gt (len $release.Issues) 0 }}
                                             <ul>
                                             {{- range $issue := $release.Issues }}
                                                 <li>
@@ -123,11 +171,12 @@
                                                 </li>
                                             {{- end }}
                                             </ul>
-                                        </div>
-                                    {{- end }}
-                                </li>
-                            {{- end }}
-                            </ul>
+                                        {{- end }}
+                                        </td>
+                                    </tr>
+                                {{- end }}
+                                </tbody>
+                            </table>
                         {{- end }}
                     {{- end }}
                 {{- end }}

@@ -8,6 +8,7 @@ import (
 	"regexp"
 	"sort"
 	"strings"
+	"time"
 
 	"github.com/fabienbellanger/goMattermost/config"
 	"github.com/fabienbellanger/goMattermost/model"
@@ -49,7 +50,7 @@ type Issue struct {
 
 // mailTemplate type pour la template HTML
 type mailTemplate struct {
-	Title    string
+	Date     string
 	Projects []Project
 }
 
@@ -92,18 +93,20 @@ func SendCommitsByMail() {
 	// ----------------------------------------
 	commits := model.GetDailyCommitsForEmailing()
 
-	// Construction des données pour envoi à la template
-	// -------------------------------------------------
-	projects := constructData(commits)
-	// fmt.Println(projects)
+	if len(commits) > 0 {
+		// Construction des données pour envoi à la template
+		// -------------------------------------------------
+		projects := constructData(commits)
+		// fmt.Println(projects)
 
-	// Affiche les commits groupés par projet
-	// --------------------------------------
-	mailbody := constructTemplate(projects)
+		// Affiche les commits groupés par projet
+		// --------------------------------------
+		mailbody := constructTemplate(projects)
 
-	// Envoi du mail
-	// -------------
-	sendMail(mailbody)
+		// Envoi du mail
+		// -------------
+		sendMail(mailbody)
+	}
 }
 
 // constructData : Construction des données pour envoi à la template
@@ -232,7 +235,7 @@ func getDevelopersTesters(list string) []string {
 // constructTemplate : Construction de la template pour l'envoi du mail
 // TODO: https://github.com/mlabouardy/go-html-email
 func constructTemplate(projects []Project) string {
-	templateData := mailTemplate{Title: "Titre de ma page", Projects: projects}
+	templateData := mailTemplate{Date: time.Now().Format("02/01/2006"), Projects: projects}
 
 	t := template.New("mail")
 	t = template.Must(t.ParseFiles("./templates/mail.html"))
