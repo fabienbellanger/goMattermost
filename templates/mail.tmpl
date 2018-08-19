@@ -1,0 +1,78 @@
+{{- define "mail" }}
+{{- template "header" . }}
+<table class="container" width="100%" border="0" cellspacing="0" cellpadding="0">
+    <tr class="header">
+        <td>Mises production du {{ .Date }}</td>
+    </tr>
+    <tr class="content">
+        <td>
+        {{- if gt (len .Projects) 0 }}
+            {{- range $project := .Projects }}
+                {{- if gt (len $project.Releases) 0 }}
+                    <p class="projectName">
+                        {{ $project.Name }}
+                    </p>
+                    <table class="projects" border="1px" cellpadding="2px" cellspacing="0px">
+                        <thead>
+                            <tr>
+                                <th align="left" valign="middle">Version</th>
+                                <th align="left" valign="middle">Développeurs</th>
+                                <th align="left" valign="middle">Testeurs</th>
+                                <th align="left" valign="middle">Issues</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {{- range $release := $project.Releases }}
+                            <tr>
+                                <td align="center" valign="middle">
+                                    <span class="bold">{{ $release.Version }}
+                                </td>
+                                <td align="left" valign="top">
+                                {{- if gt (len $release.Developers) 0 }}
+                                    <ul>
+                                    {{- range $developer := $release.Developers }}
+                                        <li>{{ $developer }}</li>
+                                    {{- end }}
+                                    </ul>
+                                {{- end }}
+                                </td>
+                                <td align="left" valign="top">
+                                {{- if gt (len $release.Testers) 0 }}
+                                    <ul>
+                                    {{- range $tester := $release.Testers }}
+                                        <li>{{ $tester }}</li>
+                                    {{- end }}
+                                    </ul>
+                                {{- end }}
+                                </td>
+                                <td align="left" valign="top">
+                                {{- if gt (len $release.Issues) 0 }}
+                                    <ul>
+                                    {{- range $issue := $release.Issues }}
+                                        <li>
+                                            {{- if ne $issue.Action "" }}
+                                                <span class="issue-{{ .Action }}">[{{ .Label }}]</span>
+                                            {{- else }}
+                                                <span class="issue-other">[Autre]</span>
+                                            {{- end }}
+                                            {{ $issue.Description }}
+                                        </li>
+                                    {{- end }}
+                                    </ul>
+                                {{- end }}
+                                </td>
+                            </tr>
+                        {{- end }}
+                        </tbody>
+                    </table>
+                {{- end }}
+            {{- end }}
+        {{- end }}
+        </td>
+    </tr>
+    <tr class="footer">
+        <td></td>
+    </tr>
+</table>
+{{- template "footer" . }}
+{{- end }}

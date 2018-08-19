@@ -102,6 +102,7 @@ func SendCommitsByMail() {
 		// Affiche les commits groupés par projet
 		// --------------------------------------
 		mailbody := constructTemplate(projects)
+		// fmt.Println(mailbody)
 
 		// Envoi du mail
 		// -------------
@@ -233,19 +234,15 @@ func getDevelopersTesters(list string) []string {
 }
 
 // constructTemplate : Construction de la template pour l'envoi du mail
-// TODO: https://github.com/mlabouardy/go-html-email
 func constructTemplate(projects []Project) string {
 	templateData := mailTemplate{Date: time.Now().Format("02/01/2006"), Projects: projects}
 
 	t := template.New("mail")
-	t = template.Must(t.ParseFiles("./templates/mail.html"))
+	t = template.Must(t.ParseFiles("./templates/header.tmpl", "./templates/footer.tmpl", "./templates/mail.tmpl"))
 
 	buffer := new(bytes.Buffer)
 	err := t.Execute(buffer, templateData)
-
-	if err != nil {
-		fmt.Println(err)
-	}
+	toolbox.CheckError(err, 0)
 
 	return buffer.String()
 }
