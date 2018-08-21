@@ -19,7 +19,7 @@ runNotification:
 notification: install runNotification
 
 runNotificationNoDB:
-	$(GORUN) main.go notification -r project/ -p . --no-database -a mattermost
+	$(GORUN) main.go notification -r project/ -p . --no-database -a mattermost -b master
 notificationNoDB: install runNotificationNoDB
 
 runApi:
