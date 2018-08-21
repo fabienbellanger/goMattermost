@@ -2,6 +2,9 @@ package database
 
 import (
 	"database/sql"
+	"os"
+	"os/exec"
+	"time"
 
 	"github.com/fabienbellanger/goMattermost/config"
 	"github.com/fabienbellanger/goMattermost/toolbox"
@@ -139,4 +142,26 @@ func InitDatabase() {
 	// Commit the transaction.
 	err = txn.Commit()
 	toolbox.CheckError(err, 1)
+}
+
+// DumpDatabase : Dump de la base de données
+func DumpDatabase() (string, int) {
+	dumpCommand := exec.Command("mysqldump",
+		"-u"+config.DatabaseUser,
+		"-p"+config.DatabasePassword,
+		config.DatabaseName)
+	dumpCommand.Dir = "."
+	dumpOutput, err := dumpCommand.Output()
+	toolbox.CheckError(err, 1)
+
+	dumpFileName := "dump_" + time.Now().Format("2006-01-02_150405") + ".sql"
+	file, err := os.Create(dumpFileName)
+	toolbox.CheckError(err, 2)
+
+	defer file.Close()
+
+	size, err := file.Write(dumpOutput)
+	toolbox.CheckError(err, 3)
+
+	return dumpFileName, size
 }

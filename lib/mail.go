@@ -263,6 +263,6 @@ func sendMail(body string) {
 	err := smtp.SendMail(serverName(), auth, mail.From, mail.To, []byte(messageBody))
 	toolbox.CheckError(err, 1)
 
-	fmt.Print(" -> Mail send: \t")
+	fmt.Print(" -> Mail send:\t")
 	color.Green("Success\n\n")
 }

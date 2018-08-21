@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/cloudfoundry/bytefmt"
 	"github.com/fabienbellanger/goMattermost/config"
 	"github.com/fabienbellanger/goMattermost/database"
 	"github.com/fabienbellanger/goMattermost/toolbox"
@@ -11,12 +12,15 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// Force : Force l'initialisation de la base de données
-var Force bool
+// Init : Initialisation de la base de données
+var Init bool
+
+// Dump : Dump de la base de données
+var Dump bool
 
 func init() {
-	DbCommand.Flags().BoolVarP(&Force, "force", "f", false, "Force database initialization")
-	DbCommand.MarkFlagRequired("force")
+	DbCommand.Flags().BoolVarP(&Init, "init", "i", false, "Database initialization")
+	DbCommand.Flags().BoolVarP(&Dump, "dump", "d", false, "Database dump")
 
 	// Ajout de la commande à la commande racine
 	rootCommand.AddCommand(DbCommand)
@@ -48,13 +52,20 @@ var DbCommand = &cobra.Command{
 		database.Open()
 		defer database.DB.Close()
 
-		// Initialisation
-		fmt.Print(" -> Database initialization: \t")
+		if Init {
+			// Initialisation
+			fmt.Print(" -> Database initialization:\t")
 
-		if Force {
 			database.InitDatabase()
 
 			color.Green("Success\n\n")
+		} else if Dump {
+			// Dump
+			fmt.Print(" -> Database dump:\t")
+
+			fileName, fileSize := database.DumpDatabase()
+
+			color.Green(fileName + " (" + bytefmt.ByteSize(uint64(fileSize)) + ") successfully created\n\n")
 		}
 	},
 }

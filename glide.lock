@@ -1,6 +1,8 @@
-hash: e086a24ac16be12c4eb407513df73ff22fa1ee71510a3298862acd2845f5ac74
-updated: 2018-08-14T23:18:56.743611+02:00
+hash: ddb0b438a3cf70875890709dbfa8e6ea38654e77f04d5669706f915932a9953e
+updated: 2018-08-21T21:31:05.773849+02:00
 imports:
+- name: github.com/cloudfoundry/bytefmt
+  version: b31f603f5e1e047fdb38584e1a922dcc5c4de5c8
 - name: github.com/dgrijalva/jwt-go
   version: 06ea1031745cb8b3dab3f6a236daf2b0aa468b7e
 - name: github.com/fatih/color
@@ -27,18 +29,18 @@ imports:
 - name: github.com/spf13/cobra
   version: ef82de70bb3f60c65fb8eebacbb2d122ef517385
 - name: github.com/spf13/pflag
-  version: 9a97c102cda95a86cec2345a6f09f55a939babf5
+  version: d929dcbb10863323c436af3cf76cb16a6dfc9b29
 - name: github.com/valyala/bytebufferpool
   version: e746df99fe4a3986f4d4f79e13c1e0117ce9c2f7
 - name: github.com/valyala/fasttemplate
   version: dcecefd839c4193db0d35b88ec65b4c12d360ab0
 - name: golang.org/x/crypto
-  version: de0752318171da717af4ce24d0a2e8626afaeb11
+  version: 614d502a4dac94afa3a6ce146bd1736da82514c6
   subpackages:
   - acme
   - acme/autocert
 - name: golang.org/x/sys
-  version: 4e1fef5609515ec7a2cee7b5de30ba6d9b438cbf
+  version: 3b58ed4ad3395d483fc92d5d14123ce2c3581fec
   subpackages:
   - unix
 - name: google.golang.org/appengine

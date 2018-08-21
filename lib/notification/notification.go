@@ -79,14 +79,14 @@ func Launch(path, repository, branch string, noDatabase, sendToMattermost, sendT
 	if sendToMattermost {
 		responseMattermost := <-responseMattermostChan
 
-		fmt.Print(" -> Mattermost response: \t")
+		fmt.Print(" -> Mattermost response:\t")
 		color.Green(responseMattermost.Status + "\n")
 	}
 
 	if sendToSlack {
 		responseSlack := <-responseSlackChan
 
-		fmt.Print(" -> Slack response: \t\t")
+		fmt.Print(" -> Slack response:\t\t")
 		color.Green(responseSlack.Status + "\n")
 	}
 
@@ -96,7 +96,7 @@ func Launch(path, repository, branch string, noDatabase, sendToMattermost, sendT
 		} else {
 			commitDB := <-commitDBChan
 
-			fmt.Print(" -> Commit inserted with ID: \t")
+			fmt.Print(" -> Commit inserted with ID:\t")
 			color.Green(strconv.FormatInt(int64(commitDB.ID), 10) + "\n")
 		}
 	}

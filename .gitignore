@@ -2,3 +2,4 @@ settings.json
 debug
 goSendNotification
 vendor
+dump_*.sql

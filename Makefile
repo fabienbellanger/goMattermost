@@ -34,9 +34,13 @@ runDb:
 	$(GORUN) main.go db
 db: install runDb
 
-runDbForce:
-	$(GORUN) main.go db --force
-dbForce: install runDbForce
+runDbInit:
+	$(GORUN) main.go db --init
+dbInit: install runDbInit
+
+runDbDump:
+	$(GORUN) main.go db --dump
+dbDump: install runDbDump
 
 build: 
 	$(GOBUILD) -o $(BINARY_NAME) -v
