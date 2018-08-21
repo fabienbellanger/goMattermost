@@ -24,9 +24,13 @@
     ```
     make db
     ```
-- Initialiser la base de données (force)
+- Initialiser la base de données
     ```
-    make dbForce
+    make dbInit
+    ```
+- Sauvegarder la base de données
+    ```
+    make dbDump
     ```
 - Exécuter les tests
     ```
