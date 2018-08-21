@@ -77,13 +77,26 @@ func FormatGitCommit(gitLogOutput []byte, commit *CommitInformation) {
 	// ------------------------
 	if message != "" {
 		regexMessage := regexp.MustCompile(`(?s)Version(?:\s)?: (.*)\nDev(?:\s)?: (.*)\n(?:Test|Tests)(?:\s)?: (.*)\nDescription(?:\s)?:\n(.*)`)
+		regexResult := regexMessage.FindAllSubmatch([]byte(message), -1)
 
-		for _, matchMessage := range regexMessage.FindAllSubmatch([]byte(message), -1) {
-			if len(matchMessage) == 5 {
-				commit.Version = string(matchMessage[1])
-				commit.Developers = string(matchMessage[2])
-				commit.Testers = string(matchMessage[3])
-				commit.Description = string(matchMessage[4])
+		if len(regexResult) == 0 {
+			commit.Version = ""
+			commit.Developers = ""
+			commit.Testers = ""
+			commit.Description = message
+		} else {
+			for _, matchMessage := range regexResult {
+				if len(matchMessage) == 5 {
+					commit.Version = string(matchMessage[1])
+					commit.Developers = string(matchMessage[2])
+					commit.Testers = string(matchMessage[3])
+					commit.Description = string(matchMessage[4])
+				} else {
+					commit.Version = ""
+					commit.Developers = ""
+					commit.Testers = ""
+					commit.Description = message
+				}
 			}
 		}
 	}
