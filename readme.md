@@ -2,9 +2,11 @@
 
 ## Installation
 - Installation de Go : [Golang website](https://golang.org/doc/install#install)
+- Installation de Glide : [Glide Github](https://github.com/Masterminds/glide)
 - Lancer
     ```
-    make deps
+    glide install
+    glide up
     ```
 - Dupliquer et renommer le fichier `settings.json.dist` en `settings.json` et renseigner les bonnes informations
 - Exécuter le fichier `.sql` dans `database` pour initialiser la base de données (facultatif)
