@@ -2,9 +2,10 @@ package config
 
 import (
 	"encoding/json"
-	"fmt"
 	"os"
 	"time"
+
+	"github.com/fabienbellanger/goMattermost/toolbox"
 )
 
 // Configuration type
@@ -123,10 +124,7 @@ func Init() {
 	decoder := json.NewDecoder(file)
 	configuration := Configuration{}
 	err := decoder.Decode(&configuration)
-
-	if err != nil {
-		fmt.Println("error:", err)
-	}
+	toolbox.CheckError(err, 0)
 
 	// Initialisation des variables
 	// ----------------------------

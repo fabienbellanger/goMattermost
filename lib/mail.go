@@ -97,12 +97,10 @@ func SendCommitsByMail() {
 		// Construction des données pour envoi à la template
 		// -------------------------------------------------
 		projects := constructData(commits)
-		// fmt.Println(projects)
 
 		// Affiche les commits groupés par projet
 		// --------------------------------------
 		mailbody := constructTemplate(projects)
-		// fmt.Println(mailbody)
 
 		// Envoi du mail
 		// -------------
