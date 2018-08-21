@@ -27,10 +27,10 @@ type payload struct {
 }
 
 // Launch : Lancement du traitement
-func Launch(path, repository string, noDatabase, sendToMattermost, sendToSlack bool) {
-	// Récupération du dernier commit Git de master
-	// --------------------------------------------
-	gitLogOutput := model.RetrieveCommit(path)
+func Launch(path, repository, branch string, noDatabase, sendToMattermost, sendToSlack bool) {
+	// Récupération du dernier commit Git de master (ou branch)
+	// --------------------------------------------------------
+	gitLogOutput := model.RetrieveCommit(path, branch)
 
 	// Formattage du commit et du repository
 	// -------------------------------------

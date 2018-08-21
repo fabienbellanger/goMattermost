@@ -90,12 +90,17 @@ func FormatGitCommit(gitLogOutput []byte, commit *CommitInformation) {
 }
 
 // RetrieveCommit : Récupération du dernier commit Git de master
-func RetrieveCommit(path string) []byte {
+func RetrieveCommit(path, branch string) []byte {
+	// Si la branche de production n'est pas bien initialisée, on met master par défaut
+	if branch == "" {
+		branch = "master"
+	}
+
 	gitLogCommand := exec.Command("git",
 		"log",
 		"-1",
 		"--pretty=format:<%an>%n<%s>%n<%b>",
-		"--first-parent", "master",
+		"--first-parent", branch,
 	)
 	gitLogCommand.Dir = path
 	gitLogOutput, err := gitLogCommand.Output()

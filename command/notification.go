@@ -21,13 +21,18 @@ var SendToMattermost bool
 // SendToSlack : Envoi à Slack ?
 var SendToSlack bool
 
-var path, repository, applications string
+// path 		: chemin vers le dépôt git
+// repository 	: Nom du dépôt git
+// branch 		: Branche de production (par défaut: master)
+// applications : Liste des applications à notifier
+var path, repository, branch, applications string
 
 func init() {
 	// Flags
 	// -----
 	NotificationCommand.Flags().StringVarP(&path, "path", "p", "", "Path")
 	NotificationCommand.Flags().StringVarP(&repository, "repository", "r", "", "Repository")
+	NotificationCommand.Flags().StringVarP(&branch, "branch", "b", "master", "Branch use for production")
 	NotificationCommand.Flags().StringVarP(&applications, "applications", "a", "", "Applications list separate by commat withour whitespace (Ex: -a slack,mattermost)")
 	NotificationCommand.Flags().BoolVarP(&NoDatabase, "no-database", "d", false, "Save data to database")
 	NotificationCommand.MarkFlagRequired("path")
@@ -45,11 +50,11 @@ var NotificationCommand = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		color.Yellow(`
 
-|-------------------------------------------------------------------------------|
-|                                                                               |
-| Send data of the last commit done on master branch to Mattermost and/or Slack |
-|                                                                               |
-|-------------------------------------------------------------------------------|
+|-----------------------------------------------------------------------------------|
+|                                                                                   |
+| Send data of the last commit done on production branch to Mattermost and/or Slack |
+|                                                                                   |
+|-----------------------------------------------------------------------------------|
 
 		`)
 
@@ -87,6 +92,6 @@ var NotificationCommand = &cobra.Command{
 
 		// Envoi de la notification
 		// ------------------------
-		notification.Launch(path, repository, NoDatabase, SendToMattermost, SendToSlack)
+		notification.Launch(path, repository, branch, NoDatabase, SendToMattermost, SendToSlack)
 	},
 }
