@@ -95,9 +95,9 @@ func InitDatabase() {
 	queries := make([]string, 0)
 
 	// User
-	queries = append(queries, "DROP TABLE IF EXISTS user2")
+	queries = append(queries, "DROP TABLE IF EXISTS user")
 	queries = append(queries, `
-		CREATE TABLE user2 (
+		CREATE TABLE user (
 			id int(10) unsigned NOT NULL AUTO_INCREMENT,
 			username varchar(128) NOT NULL,
 			password varchar(128) NOT NULL,
@@ -109,9 +109,9 @@ func InitDatabase() {
 		) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`)
 
 	// Commit
-	queries = append(queries, "DROP TABLE IF EXISTS commit2")
+	queries = append(queries, "DROP TABLE IF EXISTS commit")
 	queries = append(queries, `
-		CREATE TABLE commit2 (
+		CREATE TABLE commit (
 			id int(11) unsigned NOT NULL AUTO_INCREMENT,
 			project varchar(50) NOT NULL,
 			version varchar(11) DEFAULT '',

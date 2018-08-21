@@ -54,14 +54,26 @@ var DbCommand = &cobra.Command{
 
 		if Init {
 			// Initialisation
-			fmt.Print(" -> Database initialization:\t")
+			var confirm string
 
-			database.InitDatabase()
+			fmt.Println("If a database already exists, data will be deleted.")
+			fmt.Print("Do you really want to initalize database (Y/n): ")
+			_, err := fmt.Scanf("%s", &confirm)
+			toolbox.CheckError(err, 1)
 
-			color.Green("Success\n\n")
+			if confirm == "Y" {
+				fmt.Print("\n\n -> Database initialization:\t")
+
+				database.InitDatabase()
+
+				color.Green("Success\n\n")
+			} else {
+				fmt.Print("\n\n -> Database initialization:\t")
+				color.Yellow("Operation aborded\n\n")
+			}
 		} else if Dump {
 			// Dump
-			fmt.Print(" -> Database dump:\t")
+			fmt.Print("\n\n -> Database dump:\t")
 
 			fileName, fileSize := database.DumpDatabase()
 
