@@ -84,3 +84,59 @@ func Delete(query string, args ...interface{}) (int64, error) {
 
 	return affect, err
 }
+
+// InitDatabase : Initialisation de la base de données
+func InitDatabase() {
+	// Requètes
+	// --------
+	queries := make([]string, 0)
+
+	// User
+	queries = append(queries, "DROP TABLE IF EXISTS user2")
+	queries = append(queries, `
+		CREATE TABLE user2 (
+			id int(10) unsigned NOT NULL AUTO_INCREMENT,
+			username varchar(128) NOT NULL,
+			password varchar(128) NOT NULL,
+			lastname varchar(100) NOT NULL,
+			firstname varchar(100) NOT NULL,
+			created_at timestamp NULL DEFAULT NULL,
+			deleted_at timestamp NULL DEFAULT NULL,
+			PRIMARY KEY (id)
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`)
+
+	// Commit
+	queries = append(queries, "DROP TABLE IF EXISTS commit2")
+	queries = append(queries, `
+		CREATE TABLE commit2 (
+			id int(11) unsigned NOT NULL AUTO_INCREMENT,
+			project varchar(50) NOT NULL,
+			version varchar(11) DEFAULT '',
+			author varchar(100) DEFAULT '',
+			subject varchar(200) NOT NULL DEFAULT '',
+			description text DEFAULT NULL,
+			developers varchar(200) DEFAULT '',
+			testers varchar(200) DEFAULT '',
+			created_at datetime NOT NULL,
+			PRIMARY KEY (id)
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`)
+
+	txn, err := DB.Begin()
+	toolbox.CheckError(err, 1)
+
+	defer func() {
+		// Rollback the transaction after the function returns.
+		// If the transaction was already commited, this will do nothing.
+		_ = txn.Rollback()
+	}()
+
+	for _, query := range queries {
+		// Execute the query in the transaction.
+		_, err := txn.Exec(query)
+		toolbox.CheckError(err, 1)
+	}
+
+	// Commit the transaction.
+	err = txn.Commit()
+	toolbox.CheckError(err, 1)
+}

@@ -18,6 +18,14 @@
     ```
     make notificationNoDB
     ```
+- Initialiser la base de données (dry-run)
+    ```
+    make db
+    ```
+- Initialiser la base de données (force)
+    ```
+    make dbForce
+    ```
 - Exécuter les tests
     ```
     make test

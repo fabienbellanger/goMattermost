@@ -30,6 +30,14 @@ runMail:
 	$(GORUN) main.go mail
 mail: install runMail
 
+runDb:
+	$(GORUN) main.go db
+db: install runDb
+
+runDbForce:
+	$(GORUN) main.go db --force
+dbForce: install runDbForce
+
 build: 
 	$(GOBUILD) -o $(BINARY_NAME) -v
 
