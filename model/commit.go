@@ -38,7 +38,7 @@ type CommitJSON struct {
 	CreatedAt   string `json:"createdAt" xml:"createdAt"`
 }
 
-// CommitInformation structure
+// CommitInformation type
 type CommitInformation struct {
 	Author      string
 	Subject     string
@@ -89,7 +89,7 @@ func FormatGitCommit(gitLogOutput []byte, commit *CommitInformation) {
 	}
 }
 
-// RetrieveCommit : Récupération du dernier commit Git de master
+// RetrieveCommit : Récupération du dernier commit Git de la branche de production
 func RetrieveCommit(path, branch string) []byte {
 	// Si la branche de production n'est pas bien initialisée, on met master par défaut
 	if branch == "" {
@@ -119,8 +119,7 @@ func IsCommitValid(commit CommitInformation) bool {
 		commit.Description != "")
 }
 
-// newCommitDBFromCommitInformation : Création d'une variable de type CommitDB
-// à partir d'une variable de type CommitInformation
+// newCommitDBFromCommitInformation : Création d'une variable de type CommitDB à partir d'une variable de type CommitInformation
 func newCommitDBFromCommitInformation(repository string, commit CommitInformation) CommitDB {
 	commitDB := CommitDB{}
 
