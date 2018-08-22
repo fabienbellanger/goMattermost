@@ -40,8 +40,56 @@ var ConfigCommand = &cobra.Command{
 		displayParameters("mattermost")
 		displayParameters("smtp")
 
-		fmt.Println()
+		displayStatus()
 	},
+}
+
+// convertBoolStatusToString : Converti un booléan en string
+func convertBoolStatusToString(status bool) string {
+	if status {
+		return "[OK]"
+	}
+
+	return "[KO]"
+}
+
+// displayStatus : Affiche les status des paramètres
+func displayStatus() {
+	color.Yellow("\n\nSTATUS")
+	color.Yellow("------\n")
+
+	fmt.Print("    " + toolbox.Ucfirst("database") + "\t")
+	if config.IsDatabaseConfigCorrect() {
+		color.Green(convertBoolStatusToString(config.IsDatabaseConfigCorrect()))
+	} else {
+		color.Red(convertBoolStatusToString(config.IsDatabaseConfigCorrect()))
+	}
+
+	fmt.Print("    " + strings.ToUpper("jwt") + "\t\t")
+	color.Green(convertBoolStatusToString(true))
+
+	fmt.Print("    " + toolbox.Ucfirst("slack") + "\t")
+	if config.IsSlackConfigCorrect() {
+		color.Green(convertBoolStatusToString(config.IsSlackConfigCorrect()))
+	} else {
+		color.Red(convertBoolStatusToString(config.IsSlackConfigCorrect()))
+	}
+
+	fmt.Print("    " + toolbox.Ucfirst("mattermost") + "\t")
+	if config.IsMattermostConfigCorrect() {
+		color.Green(convertBoolStatusToString(config.IsMattermostConfigCorrect()))
+	} else {
+		color.Red(convertBoolStatusToString(config.IsMattermostConfigCorrect()))
+	}
+
+	fmt.Print("    " + strings.ToUpper("smtp") + "\t")
+	if config.IsSMTPServerConfigValid() {
+		color.Green(convertBoolStatusToString(config.IsSMTPServerConfigValid()))
+	} else {
+		color.Red(convertBoolStatusToString(config.IsSMTPServerConfigValid()))
+	}
+
+	fmt.Println()
 }
 
 // displayVersion : Affiche la version courante
@@ -55,45 +103,26 @@ func displayVersion() {
 // displayParameters : Affiche les paramètres
 func displayParameters(name string) {
 	var configuration map[string]string
-	var status bool
 
 	switch name {
 	case "database":
 		configuration = config.GetDatabaseConfig()
-		status = config.IsDatabaseConfigCorrect()
 	case "jwt":
 		configuration = config.GetJWTConfig()
-		status = true
 	case "slack":
 		configuration = config.GetSlackConfig()
-		status = config.IsSlackConfigCorrect()
 	case "mattermost":
 		configuration = config.GetMattermostConfig()
-		status = config.IsMattermostConfigCorrect()
 	case "smtp":
 		configuration = config.GetSMTPServerConfig()
-		status = config.IsSMTPServerConfigValid()
 	default:
 		configuration = nil
-		status = false
 	}
 
 	if configuration != nil {
 		color.Yellow("\n\n" + strings.ToUpper(name))
-		color.Yellow("===================\n")
+		// color.Yellow("===================\n")
 
-		// Status
-		// ------
-		fmt.Print("Status:\t")
-
-		if status {
-			color.Green("OK\n\n")
-		} else {
-			color.Red("KO\n\n")
-		}
-
-		// Configuration
-		// -------------
 		table := tablewriter.NewWriter(os.Stdout)
 		table.SetAlignment(tablewriter.ALIGN_LEFT)
 
