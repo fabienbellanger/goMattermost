@@ -42,6 +42,10 @@ runDbDump:
 	$(GORUN) main.go db --dump
 dbDump: install runDbDump
 
+runConfig:
+	$(GORUN) main.go config
+config: install runConfig
+
 build: 
 	$(GOBUILD) -o $(BINARY_NAME) -v
 

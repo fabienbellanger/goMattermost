@@ -1,5 +1,5 @@
-hash: ddb0b438a3cf70875890709dbfa8e6ea38654e77f04d5669706f915932a9953e
-updated: 2018-08-21T21:31:05.773849+02:00
+hash: 3b797008319f84b3f45c7275c14b1eb1f7df03f0e97a34b886679b8af0326525
+updated: 2018-08-22T17:59:35.98800304+02:00
 imports:
 - name: github.com/cloudfoundry/bytefmt
   version: b31f603f5e1e047fdb38584e1a922dcc5c4de5c8
@@ -26,6 +26,8 @@ imports:
   version: efa589957cd060542a26d2dd7832fd6a6c6c3ade
 - name: github.com/mattn/go-isatty
   version: 6ca4dbf54d38eea1a992b3c722a76a5d1c4cb25c
+- name: github.com/olekukonko/tablewriter
+  version: d4647c9c7a84d847478d890b816b7d8b62b0b279
 - name: github.com/spf13/cobra
   version: ef82de70bb3f60c65fb8eebacbb2d122ef517385
 - name: github.com/spf13/pflag

@@ -13,3 +13,4 @@ import:
 - package: github.com/spf13/cobra
   version: ^0.0.3
 - package: github.com/cloudfoundry/bytefmt
+- package: github.com/olekukonko/tablewriter

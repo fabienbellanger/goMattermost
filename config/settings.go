@@ -169,3 +169,25 @@ func IsDatabaseConfigCorrect() bool {
 func IsSMTPServerConfigValid() bool {
 	return (SMTPHost != "")
 }
+
+// GetDatabaseConfig : Retourne la configuration de la base de données
+func GetDatabaseConfig() map[string]string {
+	config := make(map[string]string)
+
+	config["driver"] = DatabaseDriver
+	config["name"] = DatabaseName
+	config["user"] = DatabaseUser
+	config["password"] = DatabasePassword
+
+	return config
+}
+
+// GetJWTConfig : Retourne la configuration de JWT
+func GetJWTConfig() map[string]string {
+	config := make(map[string]string)
+
+	config["secret key"] = JWTSecretKey
+	config["exp"] = JWTExp.String()
+
+	return config
+}
