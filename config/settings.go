@@ -191,3 +191,35 @@ func GetJWTConfig() map[string]string {
 
 	return config
 }
+
+// GetSlackConfig : Retourne la configuration de Slack
+func GetSlackConfig() map[string]string {
+	config := make(map[string]string)
+
+	config["hook URL"] = SlackHookURL
+	config["hook payload"] = SlackHookPayload
+
+	return config
+}
+
+// GetMattermostConfig : Retourne la configuration de Mattermost
+func GetMattermostConfig() map[string]string {
+	config := make(map[string]string)
+
+	config["hook URL"] = MattermostHookURL
+	config["hook payload"] = MattermostHookPayload
+
+	return config
+}
+
+// GetSMTPServerConfig : Retourne la configuration du serveur SMTP
+func GetSMTPServerConfig() map[string]string {
+	config := make(map[string]string)
+
+	config["host"] = SMTPHost
+	config["port"] = SMTPPort
+	config["username"] = SMTPUsername
+	config["password"] = SMTPPassword
+
+	return config
+}

@@ -2,10 +2,13 @@ package command
 
 import (
 	"fmt"
+	"os"
+	"strings"
 
 	"github.com/fabienbellanger/goMattermost/config"
 	"github.com/fabienbellanger/goMattermost/toolbox"
 	"github.com/fatih/color"
+	"github.com/olekukonko/tablewriter"
 	"github.com/spf13/cobra"
 )
 
@@ -31,8 +34,13 @@ var ConfigCommand = &cobra.Command{
 		`)
 
 		displayVersion()
-		displayDatabaseStatus()
-		displayJWTStatus()
+		displayParameters("database")
+		displayParameters("jwt")
+		displayParameters("slack")
+		displayParameters("mattermost")
+		displayParameters("smtp")
+
+		fmt.Println()
 	},
 }
 
@@ -44,62 +52,55 @@ func displayVersion() {
 	color.Green(version + "\n")
 }
 
-// displayDatabaseStatus : Affiche la configuration de la base de données
-func displayDatabaseStatus() {
-	configuration := config.GetDatabaseConfig()
-	status := config.IsDatabaseConfigCorrect()
+// displayParameters : Affiche les paramètres
+func displayParameters(name string) {
+	var configuration map[string]string
+	var status bool
 
-	color.Yellow("\n\nDATABASE")
-	color.Yellow("========\n")
-
-	// Status
-	// ------
-	fmt.Print("Status:\t\t")
-
-	if status {
-		color.Green("OK\n\n")
-	} else {
-		color.Red("KO\n\n")
+	switch name {
+	case "database":
+		configuration = config.GetDatabaseConfig()
+		status = config.IsDatabaseConfigCorrect()
+	case "jwt":
+		configuration = config.GetJWTConfig()
+		status = true
+	case "slack":
+		configuration = config.GetSlackConfig()
+		status = config.IsSlackConfigCorrect()
+	case "mattermost":
+		configuration = config.GetMattermostConfig()
+		status = config.IsMattermostConfigCorrect()
+	case "smtp":
+		configuration = config.GetSMTPServerConfig()
+		status = config.IsSMTPServerConfigValid()
+	default:
+		configuration = nil
+		status = false
 	}
 
-	// Configuration
-	// -------------
-	for key, value := range configuration {
-		if key == "password" {
-			fmt.Print(toolbox.Ucfirst(key) + ":\t")
+	if configuration != nil {
+		color.Yellow("\n\n" + strings.ToUpper(name))
+		color.Yellow("===================\n")
+
+		// Status
+		// ------
+		fmt.Print("Status:\t")
+
+		if status {
+			color.Green("OK\n\n")
 		} else {
-			fmt.Print(toolbox.Ucfirst(key) + ":\t\t")
+			color.Red("KO\n\n")
 		}
-		color.Green(value + "\n")
-	}
-}
 
-// displayJWTStatus : Affiche la configuration de JWT
-func displayJWTStatus() {
-	configuration := config.GetJWTConfig()
-	status := true
+		// Configuration
+		// -------------
+		table := tablewriter.NewWriter(os.Stdout)
+		table.SetAlignment(tablewriter.ALIGN_LEFT)
 
-	color.Yellow("\n\nJWT")
-	color.Yellow("===\n")
-
-	// Status
-	// ------
-	fmt.Print("Status:\t\t")
-
-	if status {
-		color.Green("OK\n\n")
-	} else {
-		color.Red("KO\n\n")
-	}
-
-	// Configuration
-	// -------------
-	for key, value := range configuration {
-		if key == "secret key" {
-			fmt.Print(toolbox.Ucfirst(key) + ":\t")
-		} else {
-			fmt.Print(toolbox.Ucfirst(key) + ":\t\t")
+		for key, value := range configuration {
+			table.Append([]string{toolbox.Ucfirst(key), value})
 		}
-		color.Green(value + "\n")
+
+		table.Render()
 	}
 }
