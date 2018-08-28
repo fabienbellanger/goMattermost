@@ -1,9 +1,8 @@
 package command
 
 import (
-	"os"
-
 	"github.com/fabienbellanger/goMattermost/config"
+	"github.com/fabienbellanger/goMattermost/toolbox"
 	"github.com/spf13/cobra"
 )
 
@@ -22,7 +21,6 @@ func Execute() {
 
 	// Lancement de la commande racine
 	// -------------------------------
-	if err := rootCommand.Execute(); err != nil {
-		os.Exit(1)
-	}
+	err := rootCommand.Execute()
+	toolbox.CheckError(err, 1)
 }
