@@ -107,14 +107,19 @@ func displayParameters(name string) {
 	switch name {
 	case "database":
 		configuration = config.GetDatabaseConfig()
+		break
 	case "jwt":
 		configuration = config.GetJWTConfig()
+		break
 	case "slack":
 		configuration = config.GetSlackConfig()
+		break
 	case "mattermost":
 		configuration = config.GetMattermostConfig()
+		break
 	case "smtp":
 		configuration = config.GetSMTPServerConfig()
+		break
 	default:
 		configuration = nil
 	}
