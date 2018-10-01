@@ -1,5 +1,5 @@
 hash: 3b797008319f84b3f45c7275c14b1eb1f7df03f0e97a34b886679b8af0326525
-updated: 2018-08-22T21:04:56.353159+02:00
+updated: 2018-10-01T16:56:40.455415935+02:00
 imports:
 - name: github.com/cloudfoundry/bytefmt
   version: b31f603f5e1e047fdb38584e1a922dcc5c4de5c8
@@ -12,7 +12,7 @@ imports:
 - name: github.com/inconshreveable/mousetrap
   version: 76626ae9c91c4f2a10f34cad8ce83ea42c93bb75
 - name: github.com/labstack/echo
-  version: 6d227dfea4d2e52cb76856120b3c17f758139b4e
+  version: 1abaa3049251d17932e4313c2d6165073fd07fd8
   subpackages:
   - middleware
 - name: github.com/labstack/gommon

@@ -18,7 +18,6 @@ func CheckError(err error, exitCode int) {
 			os.Exit(exitCode)
 		} else {
 			color.Red(err.Error() + "\n")
-			// panic(err.Error())
 		}
 	}
 }
