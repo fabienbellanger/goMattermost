@@ -124,23 +124,23 @@ func InitDatabase() {
 			PRIMARY KEY (id)
 		) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`)
 
-	txn, err := DB.Begin()
+	transaction, err := DB.Begin()
 	toolbox.CheckError(err, 1)
 
 	defer func() {
 		// Rollback the transaction after the function returns.
 		// If the transaction was already commited, this will do nothing.
-		_ = txn.Rollback()
+		_ = transaction.Rollback()
 	}()
 
 	for _, query := range queries {
 		// Execute the query in the transaction.
-		_, err := txn.Exec(query)
+		_, err := transaction.Exec(query)
 		toolbox.CheckError(err, 1)
 	}
 
 	// Commit the transaction.
-	err = txn.Commit()
+	err = transaction.Commit()
 	toolbox.CheckError(err, 1)
 }
 
