@@ -3,3 +3,6 @@ debug
 goSendNotification
 vendor
 dump_*.sql
+
+.idea
+.vscode
