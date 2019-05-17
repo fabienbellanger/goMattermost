@@ -1,5 +1,5 @@
 hash: 3b797008319f84b3f45c7275c14b1eb1f7df03f0e97a34b886679b8af0326525
-updated: 2018-10-17T21:18:11.226171+02:00
+updated: 2019-05-17T10:23:35.491629593+02:00
 imports:
 - name: github.com/cloudfoundry/bytefmt
   version: b31f603f5e1e047fdb38584e1a922dcc5c4de5c8
@@ -8,15 +8,15 @@ imports:
 - name: github.com/fatih/color
   version: 5b77d2a35fb0ede96d138fc9a99f5c9b6aef11b4
 - name: github.com/go-sql-driver/mysql
-  version: d523deb1b23d913de5bdada721a6071e71283618
+  version: 72cd26f257d44c1114970e19afddcd812016007e
 - name: github.com/inconshreveable/mousetrap
   version: 76626ae9c91c4f2a10f34cad8ce83ea42c93bb75
 - name: github.com/labstack/echo
-  version: 1abaa3049251d17932e4313c2d6165073fd07fd8
+  version: 38772c686c76b501f94bd6cd5b77f5842e93b559
   subpackages:
   - middleware
 - name: github.com/labstack/gommon
-  version: 2a618302b929cc20862dda3aa6f02f64dbe740dd
+  version: 7fd9f68ece0bcb1a905fac8f1549f0083f71c51b
   subpackages:
   - bytes
   - color
